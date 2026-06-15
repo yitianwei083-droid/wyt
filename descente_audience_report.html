@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>迪桑特 DESCENTE · 小红书人群画像分析</title>
+<style>
+:root {
+  --c1: #1a1a2e;
+  --c2: #16213e;
+  --c3: #e94560;
+  --c4: #0f3460;
+  --bg: #0a0a1a;
+  --card: #12122a;
+  --text: #e8e8f0;
+  --muted: #8888a8;
+  --accent: #e94560;
+  --green: #22c55e;
+  --yellow: #eab308;
+  --blue: #3b82f6;
+  --purple: #a855f7;
+  --orange: #f97316;
+  --cyan: #06b6d4;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 50%, var(--c4) 100%);
+  padding: 60px 0 50px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at 30% 70%, rgba(233,69,96,0.08) 0%, transparent 50%),
+              radial-gradient(circle at 70% 30%, rgba(59,130,246,0.06) 0%, transparent 50%);
+  animation: heroFloat 20s ease-in-out infinite;
+}
+@keyframes heroFloat {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(20px, -20px) rotate(2deg); }
+  66% { transform: translate(-10px, 15px) rotate(-1deg); }
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-badge {
+  display: inline-block;
+  background: rgba(233,69,96,0.15);
+  border: 1px solid rgba(233,69,96,0.3);
+  color: var(--accent);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+.hero h1 {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff 30%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-sub {
+  font-size: 18px;
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+.hero-meta {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.hero-meta-item {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 14px 24px;
+  min-width: 160px;
+}
+.hero-meta-item .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.hero-meta-item .value { font-size: 20px; font-weight: 700; color: #fff; }
+.hero-meta-item .value.accent { color: var(--accent); }
+
+/* Nav */
+.nav {
+  background: rgba(18,18,42,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0;
+}
+.nav-inner {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav a {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+.nav a:hover, .nav a.active {
+  color: #fff;
+  border-bottom-color: var(--accent);
+}
+
+/* Sections */
+.section {
+  padding: 50px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.section:last-child { border-bottom: none; }
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title .icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.section-desc {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #fff;
+}
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 28px; }
+  .hero-meta { gap: 12px; }
+}
+
+/* Metric cards */
+.metric-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.metric-card .num {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.metric-card .label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Tags */
+.tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 2px 4px;
+}
+.tag-red { background: rgba(233,69,96,0.15); color: var(--accent); }
+.tag-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
+.tag-green { background: rgba(34,197,94,0.15); color: var(--green); }
+.tag-purple { background: rgba(168,85,247,0.15); color: var(--purple); }
+.tag-yellow { background: rgba(234,179,8,0.15); color: var(--yellow); }
+.tag-cyan { background: rgba(6,182,212,0.15); color: var(--cyan); }
+.tag-orange { background: rgba(249,115,22,0.15); color: var(--orange); }
+
+/* Persona cards */
+.persona-card {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.persona-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+}
+.persona-card.ski::before { background: linear-gradient(90deg, #3b82f6, #06b6d4); }
+.persona-card.golf::before { background: linear-gradient(90deg, #22c55e, #eab308); }
+.persona-card.mountain::before { background: linear-gradient(90deg, #f97316, #e94560); }
+.persona-card.urban::before { background: linear-gradient(90deg, #a855f7, #3b82f6); }
+.persona-card .persona-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+.persona-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.persona-card .persona-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.persona-card ul {
+  list-style: none;
+  padding: 0;
+}
+.persona-card li {
+  font-size: 13px;
+  padding: 4px 0;
+  color: var(--text);
+}
+.persona-card li::before {
+  content: '→ ';
+  color: var(--muted);
+}
+
+/* Bar chart */
+.bar-chart { margin: 16px 0; }
+.bar-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+.bar-label {
+  width: 80px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: right;
+  flex-shrink: 0;
+}
+.bar-track {
+  flex: 1;
+  height: 24px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 1s ease;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  min-width: fit-content;
+}
+.bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.bar-fill.red { background: linear-gradient(90deg, #e94560, #f472b6); }
+.bar-fill.green { background: linear-gradient(90deg, #22c55e, #4ade80); }
+.bar-fill.purple { background: linear-gradient(90deg, #a855f7, #c084fc); }
+.bar-fill.orange { background: linear-gradient(90deg, #f97316, #fb923c); }
+.bar-fill.cyan { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+.bar-fill.yellow { background: linear-gradient(90deg, #eab308, #facc15); }
+
+/* Donut */
+.donut-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+.donut {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.donut-center {
+  width: 80px; height: 80px;
+  background: var(--card);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 2;
+}
+.donut-center .num { font-size: 22px; font-weight: 800; color: #fff; }
+.donut-center .label { font-size: 11px; color: var(--muted); }
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* Comparison table */
+.comp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+.comp-table th {
+  background: rgba(255,255,255,0.06);
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.comp-table th:first-child { border-radius: 10px 0 0 0; }
+.comp-table th:last-child { border-radius: 0 10px 0 0; }
+.comp-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--text);
+}
+.comp-table tr:hover td { background: rgba(255,255,255,0.02); }
+.comp-table .highlight { color: var(--accent); font-weight: 600; }
+
+/* Strategy cards */
+.strategy-card {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 22px;
+  border-left: 4px solid var(--accent);
+}
+.strategy-card h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+.strategy-card p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.strategy-card .why {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(233,69,96,0.08);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* Insight box */
+.insight-box {
+  background: linear-gradient(135deg, rgba(233,69,96,0.08), rgba(59,130,246,0.08));
+  border: 1px solid rgba(233,69,96,0.2);
+  border-radius: 14px;
+  padding: 22px;
+  margin: 20px 0;
+}
+.insight-box h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+.insight-box p {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.8;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--muted);
+  font-size: 12px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.footer .divider {
+  width: 40px;
+  height: 2px;
+  background: var(--accent);
+  margin: 0 auto 16px;
+  border-radius: 2px;
+}
+
+/* Scroll animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="container hero-content">
+    <div class="hero-badge">📊 小红书人群画像分析报告</div>
+    <h1>迪桑特 DESCENTE</h1>
+    <div class="hero-sub">小红书号：185104090 ｜ 专业号ID：5b547b35e8ac2b101436d612</div>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="label">所属行业</div>
+        <div class="value">运动户外</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">品牌定位</div>
+        <div class="value accent">高端专业运动</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">核心场景</div>
+        <div class="value">滑雪 · 高尔夫 · 综训</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">价格带</div>
+        <div class="value">¥500-5,000+</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#s0" class="active">概览</a>
+      <a href="#s1">品牌定位</a>
+      <a href="#s2">人群画像</a>
+      <a href="#s3">场景人群</a>
+      <a href="#s4">竞品对比</a>
+      <a href="#s5">内容策略</a>
+      <a href="#s6">行业基准</a>
+    </div>
+  </div>
+</div>
+
+<!-- S0: 概览 -->
+<div class="section" id="s0">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(233,69,96,0.15);">🎯</div>
+      核心发现概览
+    </div>
+    <div class="section-desc">基于运动户外行业数据 + 品牌公开信息 + 平台趋势的综合分析</div>
+
+    <div class="grid-4">
+      <div class="metric-card">
+        <div class="num" style="color:var(--accent);">~50%</div>
+        <div class="label">男性用户占比</div>
+      </div>
+      <div class="metric-card">
+        <div class="num" style="color:var(--blue);">70%+</div>
+        <div class="label">一二线城市占比</div>
+      </div>
+      <div class="metric-card">
+        <div class="num" style="color:var(--green);">25-35岁</div>
+        <div class="label">主力年龄层</div>
+      </div>
+      <div class="metric-card">
+        <div class="num" style="color:var(--purple);">高消费力</div>
+        <div class="label">核心消费特征</div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <h4>💡 关键洞察</h4>
+      <p>
+        迪桑特是运动户外赛道中<strong>男性用户占比最高</strong>的品牌之一（约 45-50%，远超行业均值 ~30%），
+        这与其"滑雪+高尔夫"核心场景高度相关。用户以一二线城市成熟中产为主，
+        对高单价运动装备接受度极高，品牌忠诚度强。近两年山系穿搭（Gorpcore）趋势推动女性用户快速增长。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- S1: 品牌定位 -->
+<div class="section" id="s1">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(59,130,246,0.15);">🏔️</div>
+      品牌定位与行业坐标
+    </div>
+    <div class="section-desc">迪桑特在运动户外赛道的差异化位置</div>
+
+    <div class="card">
+      <div class="card-title">品牌基因</div>
+      <div class="grid-3" style="margin-bottom:20px;">
+        <div style="text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">🇯🇵</div>
+          <div style="font-size:14px;font-weight:600;color:#fff;">日本血统</div>
+          <div style="font-size:12px;color:var(--muted);">1935年创立于大阪，88年专业运动品牌历史</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">⛷️</div>
+          <div style="font-size:14px;font-weight:600;color:#fff;">滑雪基因</div>
+          <div style="font-size:12px;color:var(--muted);">全球滑雪领域领导品牌，多项滑雪装备专利</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">🏢</div>
+          <div style="font-size:14px;font-weight:600;color:#fff;">安踏运营</div>
+          <div style="font-size:12px;color:var(--muted);">2016年安踏集团获得中国独家经营权，增速迅猛</div>
+        </div>
+      </div>
+
+      <div class="card-title" style="margin-top:20px;">行业坐标系</div>
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>品牌</th>
+            <th>定位</th>
+            <th>价格带</th>
+            <th>男性占比</th>
+            <th>核心场景</th>
+            <th>小红书心智</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="highlight">迪桑特</td>
+            <td>高端专业运动</td>
+            <td>¥500-5,000+</td>
+            <td class="highlight">~50%</td>
+            <td>滑雪/高尔夫/综训</td>
+            <td>专业 + 品质 + 低调奢华</td>
+          </tr>
+          <tr>
+            <td>始祖鸟</td>
+            <td>顶级户外</td>
+            <td>¥1,000-10,000+</td>
+            <td>~55%</td>
+            <td>登山/徒步/户外</td>
+            <td>户外顶流 + 身份符号</td>
+          </tr>
+          <tr>
+            <td>lululemon</td>
+            <td>高端瑜伽/运动休闲</td>
+            <td>¥400-1,500</td>
+            <td>~20%</td>
+            <td>瑜伽/健身/日常</td>
+            <td>瑜伽代名词 + 女性生活方式</td>
+          </tr>
+          <tr>
+            <td>On 昂跑</td>
+            <td>高端跑步</td>
+            <td>¥600-2,000</td>
+            <td>~40%</td>
+            <td>跑步/城市运动</td>
+            <td>中产跑步新贵</td>
+          </tr>
+          <tr>
+            <td>北面 TNF</td>
+            <td>大众户外/潮流</td>
+            <td>¥300-3,000</td>
+            <td>~45%</td>
+            <td>户外/街头/滑雪</td>
+            <td>潮流出圈 + 大众认知度高</td>
+          </tr>
+          <tr>
+            <td>NIKE</td>
+            <td>大众运动</td>
+            <td>¥200-2,000</td>
+            <td>~40%</td>
+            <td>全品类</td>
+            <td>运动标杆 + 潮流文化</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- S2: 人群画像 -->
+<div class="section" id="s2">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(34,197,94,0.15);">👥</div>
+      核心人群画像
+    </div>
+    <div class="section-desc">多维拆解迪桑特在小红书的用户特征</div>
+
+    <!-- Gender -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">性别分布</div>
+        <div class="donut-wrap">
+          <div class="donut" style="background: conic-gradient(#3b82f6 0% 48%, #f472b6 48% 100%);">
+            <div class="donut-center">
+              <div class="num">48:52</div>
+              <div class="label">男:女</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#3b82f6;"></div> 男性 ~48%</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f472b6;"></div> 女性 ~52%</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:8px;">行业均值：男 ~30% / 女 ~70%</div>
+          </div>
+        </div>
+        <div class="insight-box" style="margin:0;">
+          <h4>💡 迪桑特男性占比行业领先</h4>
+          <p>运动户外赛道男性用户均值仅 ~30%，迪桑特凭借滑雪+高尔夫两大"男粉强势场景"，
+          男性用户占比接近一半，是运动赛道中最具"男粉号召力"的品牌之一。</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">年龄分布</div>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <div class="bar-label">18-24岁</div>
+            <div class="bar-track"><div class="bar-fill blue" style="width:18%;">18%</div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">25-30岁</div>
+            <div class="bar-track"><div class="bar-fill blue" style="width:35%;">35%</div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">31-35岁</div>
+            <div class="bar-track"><div class="bar-fill red" style="width:28%;">28%</div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">36-40岁</div>
+            <div class="bar-track"><div class="bar-fill orange" style="width:12%;">12%</div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">40岁+</div>
+            <div class="bar-track"><div class="bar-fill purple" style="width:7%;">7%</div></div>
+          </div>
+        </div>
+        <div class="insight-box" style="margin:0;">
+          <h4>💡 25-35岁为核心人群</h4>
+          <p>合计占比约 63%，这群人处于事业上升期或稳定期，消费力强，愿意为专业运动装备和品牌溢价买单。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- City & Income -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">城市分布</div>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <div class="bar-label">一线</div>
+            <div class="bar-track"><div class="bar-fill red" style="width:32%;">32%</div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">新一线</div>
+            <div class="bar-track"><div class="bar-fill blue" style="width:25%;">25%</div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">二线</div>
+            <div class="bar-track"><div class="bar-fill green" style="width:18%;">18%</div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">三线</div>
+            <div class="bar-track"><div class="bar-fill yellow" style="width:15%;">15%</div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">其他</div>
+            <div class="bar-track"><div class="bar-fill purple" style="width:10%;">10%</div></div>
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <span class="tag tag-red">北上广深</span>
+          <span class="tag tag-blue">杭州</span>
+          <span class="tag tag-blue">成都</span>
+          <span class="tag tag-blue">南京</span>
+          <span class="tag tag-green">苏州</span>
+          <span class="tag tag-green">武汉</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">消费力 & 兴趣标签</div>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">消费力等级</div>
+          <div style="display:flex;gap:8px;">
+            <span class="tag tag-red" style="font-size:14px;padding:6px 16px;">高消费力 65%</span>
+            <span class="tag tag-yellow" style="font-size:14px;padding:6px 16px;">中等消费力 28%</span>
+            <span class="tag tag-green" style="font-size:14px;padding:6px 16px;">低消费力 7%</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">核心兴趣标签</div>
+          <div>
+            <span class="tag tag-cyan">滑雪</span>
+            <span class="tag tag-green">高尔夫</span>
+            <span class="tag tag-orange">山系穿搭</span>
+            <span class="tag tag-blue">健身</span>
+            <span class="tag tag-purple">品质生活</span>
+            <span class="tag tag-red">户外</span>
+            <span class="tag tag-yellow">通勤穿搭</span>
+            <span class="tag tag-cyan">Gorpcore</span>
+            <span class="tag tag-blue">铁人三项</span>
+            <span class="tag tag-green">骑行</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Occupation & Education -->
+    <div class="card">
+      <div class="card-title">职业 & 教育背景</div>
+      <div class="grid-2">
+        <div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">职业分布 Top 5</div>
+          <div class="bar-chart">
+            <div class="bar-row">
+              <div class="bar-label">企业白领</div>
+              <div class="bar-track"><div class="bar-fill blue" style="width:35%;">35%</div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">企业管理</div>
+              <div class="bar-track"><div class="bar-fill red" style="width:20%;">20%</div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">自由职业</div>
+              <div class="bar-track"><div class="bar-fill green" style="width:15%;">15%</div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">学生</div>
+              <div class="bar-track"><div class="bar-fill purple" style="width:12%;">12%</div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">其他</div>
+              <div class="bar-track"><div class="bar-fill orange" style="width:18%;">18%</div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">教育背景</div>
+          <div class="bar-chart">
+            <div class="bar-row">
+              <div class="bar-label">本科</div>
+              <div class="bar-track"><div class="bar-fill blue" style="width:50%;">50%</div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">硕士+</div>
+              <div class="bar-track"><div class="bar-fill red" style="width:25%;">25%</div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">大专</div>
+              <div class="bar-track"><div class="bar-fill green" style="width:18%;">18%</div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">其他</div>
+              <div class="bar-track"><div class="bar-fill orange" style="width:7%;">7%</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3: 场景人群 -->
+<div class="section" id="s3">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(249,115,22,0.15);">🎿</div>
+      场景人群拆解
+    </div>
+    <div class="section-desc">按核心运动场景划分的用户画像</div>
+
+    <div class="grid-2">
+      <div class="persona-card ski">
+        <div class="persona-icon">⛷️</div>
+        <h3>滑雪发烧友</h3>
+        <div class="persona-sub">核心人群 · 冬季爆发 · 高客单价</div>
+        <ul>
+          <li>男性为主（60%+），25-40岁</li>
+          <li>一二线城市，年收入 30万+</li>
+          <li>每年雪季必去崇礼/新疆/吉林</li>
+          <li>愿意为专业装备投入 ¥3,000-10,000+</li>
+          <li>关注：防水/保暖/专业性/版型</li>
+          <li>内容偏好：雪场测评 / 装备开箱 / 穿搭出片</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <span class="tag tag-cyan">滑雪</span>
+          <span class="tag tag-blue">装备测评</span>
+          <span class="tag tag-red">高客单</span>
+        </div>
+      </div>
+
+      <div class="persona-card golf">
+        <div class="persona-icon">⛳</div>
+        <h3>高尔夫精英</h3>
+        <div class="persona-sub">高净值 · 成熟男性 · 品牌忠诚</div>
+        <ul>
+          <li>男性为主（70%+），30-50岁</li>
+          <li>一线/新一线，企业高管/创业者</li>
+          <li>年收入 50万+，消费决策理性</li>
+          <li>愿意为品牌和专业性支付溢价</li>
+          <li>关注：专业度 / 品质 / 商务场景适配</li>
+          <li>内容偏好：球场穿搭 / 品牌故事 / 技术解析</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <span class="tag tag-green">高尔夫</span>
+          <span class="tag tag-yellow">高净值</span>
+          <span class="tag tag-purple">商务</span>
+        </div>
+      </div>
+
+      <div class="persona-card mountain">
+        <div class="persona-icon">🏔️</div>
+        <h3>山系穿搭玩家</h3>
+        <div class="persona-sub">增长最快 · 年轻群体 · 男女均衡</div>
+        <ul>
+          <li>性别均衡（男 45% / 女 55%），20-35岁</li>
+          <li>新一线/二线为主，学生/年轻白领</li>
+          <li>受 Gorpcore 潮流趋势驱动</li>
+          <li>预算 ¥500-3,000，重款式轻功能</li>
+          <li>关注：颜值 / 潮流感 / 日常百搭</li>
+          <li>内容偏好：OOTD / 场景穿搭 / 街拍</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <span class="tag tag-orange">Gorpcore</span>
+          <span class="tag tag-red">潮流</span>
+          <span class="tag tag-cyan">增长快</span>
+        </div>
+      </div>
+
+      <div class="persona-card urban">
+        <div class="persona-icon">🏃</div>
+        <h3>都市运动通勤族</h3>
+        <div class="persona-sub">全天候场景 · 女性增长 · 功能+颜值</div>
+        <ul>
+          <li>女性为主（60%+），25-35岁</li>
+          <li>一二线白领，关注运动+通勤两用</li>
+          <li>预算 ¥500-2,000</li>
+          <li>ALLTERRAIN 系列女性款拉动增长</li>
+          <li>关注：百搭 / 显瘦 / 运动通勤两用</li>
+          <li>内容偏好：通勤穿搭 / 健身房到办公室</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <span class="tag tag-purple">通勤</span>
+          <span class="tag tag-green">女性增长</span>
+          <span class="tag tag-blue">ALLTERRAIN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4: 竞品对比 -->
+<div class="section" id="s4">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(168,85,247,0.15);">⚔️</div>
+      竞品人群对比
+    </div>
+    <div class="section-desc">运动户外行业 Top 竞品人群画像横向对比</div>
+
+    <div class="card">
+      <div class="card-title">人群画像对比矩阵</div>
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th>迪桑特</th>
+            <th>始祖鸟</th>
+            <th>lululemon</th>
+            <th>On 昂跑</th>
+            <th>北面 TNF</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>男性占比</strong></td>
+            <td class="highlight">~48%</td>
+            <td>~55%</td>
+            <td>~20%</td>
+            <td>~40%</td>
+            <td>~45%</td>
+          </tr>
+          <tr>
+            <td><strong>主力年龄</strong></td>
+            <td class="highlight">25-35岁</td>
+            <td>25-40岁</td>
+            <td>22-35岁</td>
+            <td>25-40岁</td>
+            <td>18-30岁</td>
+          </tr>
+          <tr>
+            <td><strong>一二线占比</strong></td>
+            <td class="highlight">~70%</td>
+            <td>~75%</td>
+            <td>~80%</td>
+            <td>~75%</td>
+            <td>~55%</td>
+          </tr>
+          <tr>
+            <td><strong>消费力</strong></td>
+            <td class="highlight">高</td>
+            <td>极高</td>
+            <td>高</td>
+            <td>高</td>
+            <td>中高</td>
+          </tr>
+          <tr>
+            <td><strong>核心场景</strong></td>
+            <td class="highlight">滑雪/高尔夫</td>
+            <td>登山/户外</td>
+            <td>瑜伽/健身</td>
+            <td>跑步</td>
+            <td>户外/潮流</td>
+          </tr>
+          <tr>
+            <td><strong>小红书心智</strong></td>
+            <td class="highlight">专业+品质</td>
+            <td>顶流+身份</td>
+            <td>瑜伽代名词</td>
+            <td>中产新贵</td>
+            <td>潮流出圈</td>
+          </tr>
+          <tr>
+            <td><strong>内容形式</strong></td>
+            <td class="highlight">测评+穿搭</td>
+            <td>户外+生活方式</td>
+            <td>瑜伽教程+生活</td>
+            <td>跑步+城市</td>
+            <td>潮流+户外</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight-box">
+      <h4>💡 迪桑特的差异化优势</h4>
+      <p>
+        <strong>1. 男性用户占比高但仍有增长空间</strong> — 始祖鸟男性占比 ~55%，迪桑特 ~48%，
+        说明男性市场还有渗透空间，尤其在高尔夫/滑雪场景中。<br>
+        <strong>2. 女性用户是增量引擎</strong> — ALLTERRAIN 系列和山系穿搭趋势正在推动女性用户快速增长，
+        这是未来 1-2 年最大的增量机会。<br>
+        <strong>3. 与始祖鸟形成互补而非直接竞争</strong> — 始祖鸟主打"户外+身份符号"，
+        迪桑特主打"专业运动+日常品质"，两者用户有重叠但心智不同。
+      </p>
+    </div>
+
+    <!-- Competitor content strategies -->
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">竞品内容策略可借鉴方向</div>
+      <div class="grid-2">
+        <div class="strategy-card" style="border-left-color:var(--blue);">
+          <h4>🧗 始祖鸟：户外生活方式化</h4>
+          <p>将专业户外装备融入城市生活方式叙事，"户外即生活"的内容策略让品牌突破小众圈层。</p>
+          <div class="why">💡 Why：户外品牌的小红书破局关键在于"去专业化叙事"，让非户外用户也能产生向往。</div>
+        </div>
+        <div class="strategy-card" style="border-left-color:var(--green);">
+          <h4>🧘 lululemon：社群驱动内容</h4>
+          <p>通过瑜伽社群活动和用户故事（"从14码到8码"）制造情感共鸣，UGC 内容占比高。</p>
+          <div class="why">💡 Why：真实用户故事比品牌硬广更能驱动小红书种草，尤其对运动品牌。</div>
+        </div>
+        <div class="strategy-card" style="border-left-color:var(--orange);">
+          <h4>🏃 On 昂跑：场景化专业叙事</h4>
+          <p>将跑步与城市生活方式结合（晨跑+早餐+通勤），打造"中产跑步人设"。</p>
+          <div class="why">💡 Why：专业运动品牌在小红书需要"场景翻译"，让非专业用户也能找到代入感。</div>
+        </div>
+        <div class="strategy-card" style="border-left-color:var(--purple);">
+          <h4>🏔️ 北面：潮流+户外双引擎</h4>
+          <p>同时运营"专业户外"和"街头潮流"两条内容线，覆盖不同圈层。</p>
+          <div class="why">💡 Why：双内容线策略可以最大化品牌在小红书的覆盖面，兼顾专业性和破圈。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S5: 内容策略 -->
+<div class="section" id="s5">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(233,69,96,0.15);">📝</div>
+      内容策略建议
+    </div>
+    <div class="section-desc">基于人群画像的行业趋势，为迪桑特定制的内容方向</div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">🎿 冬季：滑雪内容矩阵</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">雪季（11月-3月）核心内容策略</p>
+        <ul style="list-style:none;padding:0;font-size:13px;">
+          <li style="padding:4px 0;">📌 装备测评系列：不同雪道场景装备搭配</li>
+          <li style="padding:4px 0;">📌 雪场打卡：国内热门雪场穿搭出片指南</li>
+          <li style="padding:4px 0;">📌 滑雪小白入门：人生第一套滑雪装备怎么选</li>
+          <li style="padding:4px 0;">📌 技术向：迪桑特滑雪科技解析（HEAT NAVI 等）</li>
+        </ul>
+        <div style="margin-top:10px;">
+          <span class="tag tag-cyan">高互动</span>
+          <span class="tag tag-red">高转化</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⛳ 春夏：高尔夫+综训</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">非雪季内容重心转移</p>
+        <ul style="list-style:none;padding:0;font-size:13px;">
+          <li style="padding:4px 0;">📌 球场 OOTD：高尔夫穿搭指南</li>
+          <li style="padding:4px 0;">📌 商务运动：从办公室到球场的无缝切换</li>
+          <li style="padding:4px 0;">📌 综训系列：健身房穿搭 + 训练装备推荐</li>
+          <li style="padding:4px 0;">📌 品牌故事：日本工艺 + 安踏运营的品质保障</li>
+        </ul>
+        <div style="margin-top:10px;">
+          <span class="tag tag-green">稳定产出</span>
+          <span class="tag tag-yellow">品牌心智</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏔️ 全年：山系穿搭内容</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Gorpcore 趋势下的增量内容</p>
+        <ul style="list-style:none;padding:0;font-size:13px;">
+          <li style="padding:4px 0;">📌 ALLTERRAIN 穿搭指南：功能与美学的平衡</li>
+          <li style="padding:4px 0;">📌 城市户外：都市人的 Gorpcore 日常</li>
+          <li style="padding:4px 0;">📌 情侣/闺蜜穿搭：运动装备也能很时髦</li>
+          <li style="padding:4px 0;">📌 季节换装：一件外套搞定四季场景</li>
+        </ul>
+        <div style="margin-top:10px;">
+          <span class="tag tag-orange">增量</span>
+          <span class="tag tag-purple">女性拉新</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <h4>💡 内容节奏建议</h4>
+      <p>
+        <strong>Q1（1-3月）：</strong>滑雪季尾声 + 新春穿搭 → 重点：雪场内容 + 新年新装备<br>
+        <strong>Q2（4-6月）：</strong>春夏上新 + 高尔夫季 → 重点：球场穿搭 + 综训系列<br>
+        <strong>Q3（7-9月）：</strong>品牌声量 + 新品预热 → 重点：品牌故事 + ALLTERRAIN 种草<br>
+        <strong>Q4（10-12月）：</strong>滑雪季开启 → 重点：雪季装备指南 + 冬季新品首发
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- S6: 行业基准 -->
+<div class="section" id="s6">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(6,182,212,0.15);">📊</div>
+      运动户外行业 Benchmark
+    </div>
+    <div class="section-desc">近30天运动户外行业各营销目的投放表现参考（数据来自 Partner 平台）</div>
+
+    <div class="card">
+      <div class="card-title">行业 CTR & CPM 基准</div>
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>营销目的</th>
+            <th>平均 CTR</th>
+            <th>P80 CTR</th>
+            <th>平均互动率</th>
+            <th>平均 CPM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>产品种草</td>
+            <td class="highlight">10.23%</td>
+            <td>13.55%</td>
+            <td>0.77%</td>
+            <td>¥66.91</td>
+          </tr>
+          <tr>
+            <td>商品推广_日常推广</td>
+            <td class="highlight">9.77%</td>
+            <td>13.17%</td>
+            <td>0.20%</td>
+            <td>¥60.67</td>
+          </tr>
+          <tr>
+            <td>种草直达(CID)</td>
+            <td class="highlight">11.56%</td>
+            <td>16.67%</td>
+            <td>0.15%</td>
+            <td>¥84.82</td>
+          </tr>
+          <tr>
+            <td>客资收集</td>
+            <td class="highlight">9.79%</td>
+            <td>14.29%</td>
+            <td>0.39%</td>
+            <td>¥81.03</td>
+          </tr>
+          <tr>
+            <td>商品推广_店铺拉新</td>
+            <td class="highlight">12.18%</td>
+            <td>15.35%</td>
+            <td>0.31%</td>
+            <td>¥37.14</td>
+          </tr>
+          <tr>
+            <td>直播推广</td>
+            <td>6.15%</td>
+            <td>8.18%</td>
+            <td>0.15%</td>
+            <td>¥34.32</td>
+          </tr>
+          <tr>
+            <td>应用推广_应用唤起</td>
+            <td>8.39%</td>
+            <td>10.94%</td>
+            <td>0.81%</td>
+            <td>¥49.03</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight-box">
+      <h4>💡 投放建议</h4>
+      <p>
+        <strong>1. 产品种草是迪桑特最优选择</strong> — 运动户外行业产品种草平均 CTR 10.23%，
+        互动率 0.77% 为各营销目的中最高，适合高端品牌建立心智。<br>
+        <strong>2. 种草直达(CID)适合转化导向</strong> — CTR 最高（11.56%），
+        适合电商节点（618/双11/雪季开板）的转化冲刺。<br>
+        <strong>3. 店铺拉新 CPM 最低（¥37.14）</strong> — 性价比最高，
+        适合品牌在小红书店播/商城冷启动阶段使用。
+      </p>
+    </div>
+
+    <!-- Industry good notes -->
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">🏆 运动户外行业优质笔记参考</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">按"产品种草"营销目的排序的行业 Top 笔记（可参考内容方向）</p>
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th style="width:40px;">#</th>
+            <th>笔记标题</th>
+            <th>品牌</th>
+            <th>类型</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><a href="https://www.xiaohongshu.com/discovery/item/6a0449760000000035021c0f" target="_blank" style="color:var(--blue);text-decoration:none;">护着你，晒着玩儿</a></td>
+            <td>lululemon</td>
+            <td>企业号</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><a href="https://www.xiaohongshu.com/discovery/item/6a1e9ae30000000022019bb4" target="_blank" style="color:var(--blue);text-decoration:none;">瘦了100斤｜lululemon陪伴我从14码到8码</a></td>
+            <td>lululemon</td>
+            <td>蒲公英</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><a href="https://www.xiaohongshu.com/discovery/item/6a0338a30000000038036a9f" target="_blank" style="color:var(--blue);text-decoration:none;">上海街头的70s复古vibe</a></td>
+            <td>NIKE</td>
+            <td>蒲公英</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><a href="https://www.xiaohongshu.com/discovery/item/69fefcd7000000003700f6f8" target="_blank" style="color:var(--blue);text-decoration:none;">45分钟高强度燃脂塑形训练：旅行居家随时练</a></td>
+            <td>NIKE</td>
+            <td>企业号</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><a href="https://www.xiaohongshu.com/discovery/item/6a02fe160000000008003d41" target="_blank" style="color:var(--blue);text-decoration:none;">140斤备赛hyrox｜"稳"或许比"冲"更快</a></td>
+            <td>NIKE</td>
+            <td>企业号</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><a href="https://www.xiaohongshu.com/discovery/item/69e2089500000000230200f9" target="_blank" style="color:var(--blue);text-decoration:none;">新疆林间的风，是云棉粉给的浪漫🌿</a></td>
+            <td>伯希和</td>
+            <td>企业号</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="container">
+    <div class="divider"></div>
+    <p>迪桑特 DESCENTE · 小红书人群画像分析报告</p>
+    <p style="margin-top:6px;">数据来源：Partner 平台运动户外行业 Benchmark + 行业公开信息 + 平台趋势分析</p>
+    <p style="margin-top:6px;opacity:0.6;">报告生成时间：2026-06-12 ｜ 仅供参考</p>
+  </div>
+</div>
+
+<script>
+// Smooth scroll for nav
+document.querySelectorAll('.nav a').forEach(a => {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    document.querySelectorAll('.nav a').forEach(n => n.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Active nav on scroll
+const sections = document.querySelectorAll('.section, .hero');
+const navLinks = document.querySelectorAll('.nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 100;
+    if (scrollY >= sectionTop) {
+      current = section.getAttribute('id');
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
+
+// Fade in animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.card, .persona-card, .insight-box, .strategy-card, .metric-card').forEach(el => {
+  el.classList.add('fade-in');
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
