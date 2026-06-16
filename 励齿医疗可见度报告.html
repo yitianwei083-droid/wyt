@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>励齿医疗 x 微盟星启 GEO 分析报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入 ECharts 官方 CDN 替代失效的本地路径 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap">
+    <style>
+        /* CSS Variables */
+        :root {
+            --background: 260 87% 3%;
+            --foreground: 40 6% 95%;
+            --hero-sub: 40 6% 82%;
+            --gold: #00f0ff;
+            --accent: #a855f7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'General Sans', system-ui, sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            overflow-x: hidden;
+        }
+
+        /* Liquid Glass Utility */
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.03);
+            background-blend-mode: luminosity;
+            backdrop-filter: blur(8px);
+            border: none;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .liquid-glass::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1.4px;
+            background: linear-gradient(
+                180deg,
+                rgba(255,255,255,0.45) 0%,
+                rgba(255,255,255,0.15) 20%,
+                rgba(255,255,255,0) 40%,
+                rgba(255,255,255,0) 60%,
+                rgba(255,255,255,0.15) 80%,
+                rgba(255,255,255,0.45) 100%
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 240, 255, 0.15);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .number-animate {
+            animation: numberCount 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes numberCount {
+            from { 
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.3), transparent);
+        }
+
+        /* 标题渐变滚动流动动效 */
+        .animate-text-flow {
+            background: linear-gradient(
+                90deg, 
+                #ffffff 0%, 
+                #00f0ff 25%, 
+                #a855f7 50%, 
+                #00f0ff 75%, 
+                #ffffff 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textFlow 6s linear infinite;
+        }
+
+        /* 导航栏专属渐变滚动动效 */
+        .animate-nav-flow {
+            background: linear-gradient(
+                90deg, 
+                #ffffff 0%, 
+                #00f0ff 25%, 
+                #a855f7 50%, 
+                #00f0ff 75%, 
+                #ffffff 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textFlow 10s linear infinite;
+        }
+
+        @keyframes textFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-visible">
+    <!-- Background Video Wrapper -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden z-0">
+        <video 
+            id="bgVideo"
+            class="absolute inset-0 w-full h-full object-cover"
+            muted
+            playsinline
+            style="opacity: 0;"
+        >
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_065045_c44942da-53c6-4804-b734-f9e07fc22e08.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Blurred Overlay Shape -->
+    <div 
+        class="fixed w-[984px] h-[527px] opacity-60 bg-gray-950 blur-[82px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0"
+    ></div>
+
+    <!-- Main Content -->
+    <div class="relative z-10">
+        <!-- Header -->
+        <header class="py-12 px-6 md:px-12 fade-in">
+            <div class="max-w-6xl mx-auto">
+                <!-- 导航栏：已加入 font-bold 加粗字体并带有流光滚动效果 -->
+                <nav class="flex flex-wrap justify-center gap-4 mb-10 pb-6 border-b border-white/10">
+                    <a href="#overview" class="px-4 py-2 rounded-full text-sm font-bold hover:bg-white/10 transition-all duration-300 liquid-glass animate-nav-flow">服务概览</a>
+                    <a href="#content" class="px-4 py-2 rounded-full text-sm font-bold hover:bg-white/10 transition-all duration-300 liquid-glass animate-nav-flow">服务内容</a>
+                    <a href="#strategy" class="px-4 py-2 rounded-full text-sm font-bold hover:bg-white/10 transition-all duration-300 liquid-glass animate-nav-flow">服务策略</a>
+                    <a href="#monitoring" class="px-4 py-2 rounded-full text-sm font-bold hover:bg-white/10 transition-all duration-300 liquid-glass animate-nav-flow">效果监测</a>
+                    <a href="#sentiment" class="px-4 py-2 rounded-full text-sm font-bold hover:bg-white/10 transition-all duration-300 liquid-glass animate-nav-flow">情绪分析</a>
+                    <a href="#scenarios" class="px-4 py-2 rounded-full text-sm font-bold hover:bg-white/10 transition-all duration-300 liquid-glass animate-nav-flow">场景明细</a>
+                </nav>
+                
+                <div class="text-center mb-8">
+                    <h1 class="text-[clamp(1.8rem,4vw,3rem)] font-bold mb-4 animate-text-flow">
+                        励齿医疗 x 微盟星启 GEO 分析报告
+                    </h1>
+                    <p class="text-sm text-[hsl(var(--hero-sub)/70)]">
+                        报告日期：2026/06/15 | 数据截止：2026/06/15
+                    </p>
+                </div>
+                
+                <!-- 核心概览卡片：已还原至上一版的文字格式与排版 -->
+                <div id="overview" class="liquid-glass rounded-2xl p-8 slide-up">
+                    <p class="text-[hsl(var(--hero-sub))] leading-relaxed text-lg">
+                        励齿医疗在 GEO 服务期间（3月11日至6月15日）综合可见度达 <span class="text-[#00f0ff] font-bold">77.45%</span> <span class="text-emerald-400 font-bold">(+8.28pp)</span>，排名行业第 <span class="text-[#00f0ff] font-bold">1</span>，领先第 2 名丰信牙科商城 10.34 个百分点。服务期内可见度最高达 <span class="text-[#00f0ff] font-bold">82.50%</span>（6月7日），累计获得 <span class="text-[#00f0ff] font-bold">89次</span> 品牌曝光，覆盖 <span class="text-[#00f0ff] font-bold">6</span> 大主流 AI 平台，发布 <span class="text-[#00f0ff] font-bold">71篇</span> GEO 优化内容。
+                    </p>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-6xl mx-auto px-6 md:px-12 pb-20">
+            <!-- Section 1: 服务内容 -->
+            <section id="content" class="mb-16 slide-up" style="animation-delay: 0.1s">
+                <div class="flex items-center mb-8">
+                    <span class="text-[#00f0ff] text-2xl mr-3"><i class="fa fa-info-circle"></i></span>
+                    <h2 class="text-2xl md:text-3xl font-bold">服务内容</h2>
+                </div>
+                
+                <p class="text-sm text-[hsl(var(--hero-sub)/70)] mb-6">励齿医疗 GEO 服务覆盖全链路，当前已布局 1 个核心话题、6 个主流 AI 平台</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="liquid-glass rounded-xl p-6 card-hover">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-2">服务品牌</p>
+                        <h3 class="text-xl font-bold text-[#00f0ff]">励齿医疗</h3>
+                    </div>
+                    <div class="liquid-glass rounded-xl p-6 card-hover">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-2">核心话题</p>
+                        <h3 class="text-xl font-bold text-white">1 个</h3>
+                        <p class="text-[10px] text-[hsl(var(--hero-sub)/50)] mt-1">口腔耗材采购平台</p>
+                    </div>
+                    <div class="liquid-glass rounded-xl p-6 card-hover">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-2">覆盖平台</p>
+                        <h3 class="text-xl font-bold text-[#00f0ff]">6 大 AI 平台</h3>
+                        <p class="text-[10px] text-[hsl(var(--hero-sub)/50)] mt-1">主流 AI 平台全覆盖</p>
+                    </div>
+                    <div class="liquid-glass rounded-xl p-6 card-hover">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-2">发布总条数</p>
+                        <h3 class="text-xl font-bold text-white">71 条</h3>
+                        <p class="text-[10px] text-[hsl(var(--hero-sub)/50)] mt-1">GEO 优化内容</p>
+                    </div>
+                </div>
+
+                <div class="liquid-glass rounded-xl p-8">
+                    <h3 class="text-xl font-bold mb-6 text-[#00f0ff]">💡 核心洞察</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-3">🎯</div>
+                            <h4 class="font-bold mb-2">定位精准</h4>
+                            <p class="text-[hsl(var(--hero-sub)/70)] text-sm">聚焦口腔耗材采购平台核心话题，精准对准口腔诊所采购需求。</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl mb-3">🤖</div>
+                            <h4 class="font-bold mb-2">全网覆盖</h4>
+                            <p class="text-[hsl(var(--hero-sub)/70)] text-sm">6 大主流 AI 平台全覆盖，其中通义千问和百度AI可见度处于领先地位。</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl mb-3">📰</div>
+                            <h4 class="font-bold mb-2">多维矩阵</h4>
+                            <p class="text-[hsl(var(--hero-sub)/70)] text-sm">71 篇 GEO 内容覆盖自媒体与权威媒体，形成多维度的内容传播矩阵。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-divider mb-16"></div>
+
+            <!-- Section 2: 服务策略 -->
+            <section id="strategy" class="mb-16 slide-up" style="animation-delay: 0.2s">
+                <div class="flex items-center mb-8">
+                    <span class="text-[#00f0ff] text-2xl mr-3"><i class="fa fa-newspaper-o"></i></span>
+                    <h2 class="text-2xl md:text-3xl font-bold">服务策略</h2>
+                </div>
+
+                <!-- 媒体分发渠道矩阵 -->
+                <div class="liquid-glass rounded-xl p-6 mb-8">
+                    <h3 class="font-bold mb-4 text-[#00f0ff]">媒体分发渠道矩阵</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead>
+                                <tr class="bg-black/30 border-b border-white/10 text-white font-semibold">
+                                    <th class="px-4 py-3 w-32">媒体类型</th>
+                                    <th class="px-4 py-3">渠道明细</th>
+                                    <th class="px-4 py-3 text-right w-28">发布条数</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 text-[hsl(var(--hero-sub)/80)]">
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4 font-bold text-white">自媒体</td>
+                                    <td class="px-4 py-4 leading-relaxed">今日头条、百家号、搜狐、网易号、荆楚网、手机搜狐网、好看视频</td>
+                                    <td class="px-4 py-4 text-right font-bold text-[#00f0ff]">38 条</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4 font-bold text-white">综合门户</td>
+                                    <td class="px-4 py-4 leading-relaxed">39健康网、博禾医生、中华网科技、潮新闻、商业观察网、咸宁新闻网、长安健康网、天天养生网、中国节能产业网等15家</td>
+                                    <td class="px-4 py-4 text-right font-bold text-[#00f0ff]">33 条</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- AI 引用表现 -->
+                <div class="liquid-glass rounded-xl p-6">
+                    <h3 class="font-bold mb-4 text-[#00f0ff]">品牌发布文章的 AI 引用表现</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead>
+                                <tr class="bg-black/30 border-b border-white/10 text-white font-semibold">
+                                    <th class="px-4 py-3">文章标题</th>
+                                    <th class="px-4 py-3 w-32">发布站点</th>
+                                    <th class="px-4 py-3 text-center w-24">引用次数</th>
+                                    <th class="px-4 py-3 text-center w-32">场景问题暴露</th>
+                                    <th class="px-4 py-3 text-center w-24">品牌发布</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 text-[hsl(var(--hero-sub)/80)]">
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4 font-medium text-white">励齿医疗:口腔诊所数字化全流程采购的一站式解决方案</td>
+                                    <td class="px-4 py-4">博禾医生</td>
+                                    <td class="px-4 py-4 text-center font-bold text-[#00f0ff]">44</td>
+                                    <td class="px-4 py-4 text-center">19</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400 font-bold">✓</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4 font-medium text-white">口腔耗材采购平台怎么选？这6个关键点帮你避开采购"隐形坑"</td>
+                                    <td class="px-4 py-4">大众网</td>
+                                    <td class="px-4 py-4 text-center font-bold text-[#00f0ff]">34</td>
+                                    <td class="px-4 py-4 text-center">19</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400 font-bold">✓</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4 font-medium text-white">开一家口腔门诊，到底需要怎样的"后盾"？</td>
+                                    <td class="px-4 py-4">大众网</td>
+                                    <td class="px-4 py-4 text-center font-bold text-[#00f0ff]">28</td>
+                                    <td class="px-4 py-4 text-center">18</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400 font-bold">✓</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4 font-medium text-white">口腔耗材采购平台进入智能化时代：诊所采购如何实现效率升级？</td>
+                                    <td class="px-4 py-4">搜狐</td>
+                                    <td class="px-4 py-4 text-center font-bold text-[#00f0ff]">25</td>
+                                    <td class="px-4 py-4 text-center">15</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400 font-bold">✓</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4 font-medium text-white">口腔电商平台进入全链路时代：梅苗苗如何成为诊所采购与运营的关键基础设施</td>
+                                    <td class="px-4 py-4">热点新闻</td>
+                                    <td class="px-4 py-4 text-center font-bold text-[#00f0ff]">18</td>
+                                    <td class="px-4 py-4 text-center">12</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400 font-bold">✓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-divider mb-16"></div>
+
+            <!-- Section 3: 效果监测 -->
+            <section id="monitoring" class="mb-16 slide-up" style="animation-delay: 0.3s">
+                <div class="flex items-center mb-8">
+                    <span class="text-[#00f0ff] text-2xl mr-3"><i class="fa fa-bar-chart"></i></span>
+                    <h2 class="text-2xl md:text-3xl font-bold">效果监测</h2>
+                </div>
+
+                <!-- 核心 KPI 监测数据 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    <div class="liquid-glass rounded-xl p-6 card-hover text-center">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-2">当前综合可见度</p>
+                        <h3 class="text-4xl font-bold text-[#00f0ff] number-animate">77.45%</h3>
+                        <p class="text-xs text-[hsl(var(--hero-sub)/50)] mt-2">较最高点 82.50% 回落 7.99pp</p>
+                    </div>
+                    <div class="liquid-glass rounded-xl p-6 card-hover text-center">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-2">服务最高可见度</p>
+                        <h3 class="text-4xl font-bold text-[#00f0ff] number-animate">82.50%</h3>
+                        <p class="text-xs text-[hsl(var(--hero-sub)/50)] mt-2">于6月7日达到峰值</p>
+                    </div>
+                    <div class="liquid-glass rounded-xl p-6 card-hover text-center">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-2">累计品牌露出</p>
+                        <h3 class="text-4xl font-bold text-[#00f0ff] number-animate">83 次</h3>
+                        <p class="text-xs text-[hsl(var(--hero-sub)/50)] mt-2">峰值 99 次（6月4日）</p>
+                    </div>
+                    <div class="liquid-glass rounded-xl p-6 card-hover text-center">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-2">服务结束 vs 开始</p>
+                        <h3 class="text-4xl font-bold text-[#00f0ff] number-animate">+67.37%</h3>
+                        <p class="text-xs text-[hsl(var(--hero-sub)/50)] mt-2">期初 7.14% 提升至 77.45%</p>
+                    </div>
+                </div>
+
+                <!-- 场景周期对比 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="liquid-glass rounded-xl p-6 text-center">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-1">服务开始（3月11日）</p>
+                        <p class="text-2xl font-bold text-gray-400">7.14%</p>
+                        <p class="text-xs text-[hsl(var(--hero-sub)/50)] mt-2">估算基线</p>
+                    </div>
+                    <div class="liquid-glass rounded-xl p-6 text-center border-2 border-[#00f0ff]/30">
+                        <p class="text-[#00f0ff] text-sm font-semibold mb-1">服务结束（6月15日）</p>
+                        <p class="text-2xl font-bold text-[#00f0ff]">77.45%</p>
+                        <p class="text-xs text-emerald-400 font-bold mt-2">↑ 大幅提升 +70.31%</p>
+                    </div>
+                    <div class="liquid-glass rounded-xl p-6 text-center">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-1">服务期最高可见度</p>
+                        <p class="text-2xl font-bold text-white">82.50%</p>
+                        <p class="text-xs text-[hsl(var(--hero-sub)/50)] mt-2">6月7日峰值表现</p>
+                    </div>
+                </div>
+
+                <!-- 平台及话题对比图表 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="liquid-glass rounded-xl p-6">
+                        <h3 class="font-bold mb-4 text-[#00f0ff]">各 AI 平台可见度对比</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left">
+                                <thead>
+                                    <tr class="bg-black/30 text-white border-b border-white/10 font-semibold">
+                                        <th class="px-3 py-2">平台</th>
+                                        <th class="px-3 py-2">服务开始(3/11)</th>
+                                        <th class="px-3 py-2">服务结束(6/15)</th>
+                                        <th class="px-3 py-2">变化幅度</th>
+                                        <th class="px-3 py-2">状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-white/5 text-[hsl(var(--hero-sub)/80)]">
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5 font-bold">DeepSeek</td>
+                                        <td class="px-3 py-2.5">15.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-semibold">60.00%</td>
+                                        <td class="px-3 py-2.5 text-emerald-400 font-bold">+45.00%</td>
+                                        <td class="px-3 py-2.5"><span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full">大幅增长</span></td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5 font-bold">Kimi</td>
+                                        <td class="px-3 py-2.5">10.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-semibold">65.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-bold">+55.00%</td>
+                                        <td class="px-3 py-2.5"><span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full">大幅增长</span></td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5 font-bold">通义千问</td>
+                                        <td class="px-3 py-2.5">-</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-semibold">80.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-bold">+80.00%</td>
+                                        <td class="px-3 py-2.5"><span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full">大幅增长</span></td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5 font-bold">元宝</td>
+                                        <td class="px-3 py-2.5">10.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-semibold">64.71%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-bold">+54.71%</td>
+                                        <td class="px-3 py-2.5"><span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full">大幅增长</span></td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5 font-bold">豆包</td>
+                                        <td class="px-3 py-2.5">5.26%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-semibold">70.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-bold">+64.74%</td>
+                                        <td class="px-3 py-2.5"><span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full">大幅增长</span></td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5 font-bold">百度AI</td>
+                                        <td class="px-3 py-2.5">5.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-semibold">95.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-bold">+90.00%</td>
+                                        <td class="px-3 py-2.5"><span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full">大幅增长</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="liquid-glass rounded-xl p-6">
+                        <h3 class="font-bold mb-4 text-[#00f0ff]">话题：口腔耗材采购平台明细</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left">
+                                <thead>
+                                    <tr class="bg-black/30 text-white border-b border-white/10 font-semibold">
+                                        <th class="px-3 py-2">平台</th>
+                                        <th class="px-3 py-2">期初</th>
+                                        <th class="px-3 py-2">期末</th>
+                                        <th class="px-3 py-2">变化</th>
+                                        <th class="px-3 py-2 text-right">峰值</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-white/5 text-[hsl(var(--hero-sub)/80)]">
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5 font-bold text-white">综合</td>
+                                        <td class="px-3 py-2.5">7.14%</td>
+                                        <td class="px-3 py-2.5">77.45%</td>
+                                        <td class="px-3 py-2.5 text-emerald-400 font-semibold">+70.31%</td>
+                                        <td class="px-3 py-2.5 text-right font-bold text-[#00f0ff]">82.50%</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5">豆包</td>
+                                        <td class="px-3 py-2.5">5.26%</td>
+                                        <td class="px-3 py-2.5">70.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-bold">+64.74%</td>
+                                        <td class="px-3 py-2.5 text-right">90%</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5">元宝</td>
+                                        <td class="px-3 py-2.5">10.00%</td>
+                                        <td class="px-3 py-2.5">64.71%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-bold">+85%</td>
+                                        <td class="px-3 py-2.5 text-right">85%</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5">DeepSeek</td>
+                                        <td class="px-3 py-2.5">15.00%</td>
+                                        <td class="px-3 py-2.5">60.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-semibold">+45.00%</td>
+                                        <td class="px-3 py-2.5 text-right font-bold text-[#00f0ff]">84.21%</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5">百度AI</td>
+                                        <td class="px-3 py-2.5">5.00%</td>
+                                        <td class="px-3 py-2.5">95.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-bold">+90.00%</td>
+                                        <td class="px-3 py-2.5 text-right font-bold">100.00%</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5">通义千问</td>
+                                        <td class="px-3 py-2.5">0%</td>
+                                        <td class="px-3 py-2.5">80.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-bold">+80.00%</td>
+                                        <td class="px-3 py-2.5 text-right font-bold">100.00%</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="px-3 py-2.5">Kimi</td>
+                                        <td class="px-3 py-2.5">10.00%</td>
+                                        <td class="px-3 py-2.5">65.00%</td>
+                                        <td class="px-3 py-2.5 text-[#00f0ff] font-bold">+55.00%</td>
+                                        <td class="px-3 py-2.5 text-right">80%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 趋势折线图展示区 (ECharts 高端暗色系配置) -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="liquid-glass rounded-xl p-6">
+                        <h4 class="text-sm font-bold text-[#00f0ff] mb-4 text-center">可见度变化趋势</h4>
+                        <div id="visibility-chart" class="w-full h-72"></div>
+                    </div>
+                    <div class="liquid-glass rounded-xl p-6">
+                        <h4 class="text-sm font-bold text-[#00f0ff] mb-4 text-center">品牌露出次数趋势</h4>
+                        <div id="brand-exposure-chart" class="w-full h-72"></div>
+                    </div>
+                </div>
+
+                <!-- 竞品排名 -->
+                <div class="liquid-glass rounded-xl p-6">
+                    <h3 class="font-bold mb-4 text-[#00f0ff]">竞品排名 (3月11日 vs 6月15日)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead>
+                                <tr class="bg-black/30 border-b border-white/10 text-white font-semibold">
+                                    <th class="px-4 py-3 w-20">排名</th>
+                                    <th class="px-4 py-3">品牌</th>
+                                    <th class="px-4 py-3 text-center">可见度</th>
+                                    <th class="px-4 py-3 text-center">变化率</th>
+                                    <th class="px-4 py-3 text-center w-32">说明</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 text-[hsl(var(--hero-sub)/80)]">
+                                <!-- 自身突出高亮行 -->
+                                <tr class="bg-[#00f0ff]/10 font-bold border-l-4 border-[#00f0ff]">
+                                    <td class="px-4 py-4 text-[#00f0ff]">1</td>
+                                    <td class="px-4 py-4 text-[#00f0ff]">励齿医疗</td>
+                                    <td class="px-4 py-4 text-center text-[#00f0ff]">77.45%</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400">+5.34pp</td>
+                                    <td class="px-4 py-4 text-center text-[#00f0ff]">自身</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4">2</td>
+                                    <td class="px-4 py-4 text-white">丰信牙科商城</td>
+                                    <td class="px-4 py-4 text-center">62.75%</td>
+                                    <td class="px-4 py-4 text-center text-rose-400">-1.42pp</td>
+                                    <td class="px-4 py-4 text-center text-slate-500">-</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4">3</td>
+                                    <td class="px-4 py-4 text-white">康健苗</td>
+                                    <td class="px-4 py-4 text-center">59.80%</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400">+38.97pp</td>
+                                    <td class="px-4 py-4 text-center text-slate-500">-</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4">4</td>
+                                    <td class="px-4 py-4 text-white">松佰</td>
+                                    <td class="px-4 py-4 text-center">38.24%</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400">+1.57pp</td>
+                                    <td class="px-4 py-4 text-center text-slate-500">-</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4">5</td>
+                                    <td class="px-4 py-4 text-white">Jarvis</td>
+                                    <td class="px-4 py-4 text-center">18.63%</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400">+1.13pp</td>
+                                    <td class="px-4 py-4 text-center text-slate-500">-</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4">6</td>
+                                    <td class="px-4 py-4 text-white">爱牙库</td>
+                                    <td class="px-4 py-4 text-center">18.63%</td>
+                                    <td class="px-4 py-4 text-center text-rose-400">-7.20pp</td>
+                                    <td class="px-4 py-4 text-center text-slate-500">-</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4">7</td>
+                                    <td class="px-4 py-4 text-white">牙易</td>
+                                    <td class="px-4 py-4 text-center">10.78%</td>
+                                    <td class="px-4 py-4 text-center text-rose-400">-3.39pp</td>
+                                    <td class="px-4 py-4 text-center text-slate-500">-</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4">8</td>
+                                    <td class="px-4 py-4 text-white">众牙商城</td>
+                                    <td class="px-4 py-4 text-center">4.90%</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400">+2.40pp</td>
+                                    <td class="px-4 py-4 text-center text-slate-500">-</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4">9</td>
+                                    <td class="px-4 py-4 text-white">牙医管家</td>
+                                    <td class="px-4 py-4 text-center">4.90%</td>
+                                    <td class="px-4 py-4 text-center text-emerald-400">+1.57pp</td>
+                                    <td class="px-4 py-4 text-center text-slate-500">-</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-4">10</td>
+                                    <td class="px-4 py-4 text-white">千齿汇</td>
+                                    <td class="px-4 py-4 text-center">3.92%</td>
+                                    <td class="px-4 py-4 text-center text-rose-400">-6.08pp</td>
+                                    <td class="px-4 py-4 text-center text-slate-500">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-divider mb-16"></div>
+
+            <!-- Section 4: 情绪分析 -->
+            <section id="sentiment" class="mb-16 slide-up" style="animation-delay: 0.4s">
+                <div class="flex items-center mb-8">
+                    <span class="text-[#00f0ff] text-2xl mr-3"><i class="fa fa-heartbeat"></i></span>
+                    <h2 class="text-2xl md:text-3xl font-bold">情绪分析</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="liquid-glass rounded-xl p-6 text-center border-l-4 border-emerald-500">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-2">正面情绪占比</p>
+                        <h3 class="text-4xl font-bold text-emerald-400 number-animate">65.00%</h3>
+                        <p class="text-xs text-[hsl(var(--hero-sub)/50)] mt-2">用户对平台反馈积极，服务满意度高</p>
+                    </div>
+                    <div class="liquid-glass rounded-xl p-6 text-center border-l-4 border-rose-500">
+                        <p class="text-[hsl(var(--hero-sub)/70)] text-sm mb-2">负面情绪占比</p>
+                        <h3 class="text-4xl font-bold text-rose-400 number-animate">5.00%</h3>
+                        <p class="text-xs text-[hsl(var(--hero-sub)/50)] mt-2">负面反馈极少，整体控评体系稳健</p>
+                    </div>
+                </div>
+
+                <div class="liquid-glass rounded-xl p-8 space-y-6">
+                    <div>
+                        <h4 class="text-sm font-bold text-emerald-400 mb-3 flex items-center gap-2">
+                            <span>😊</span> 正面特征词
+                        </h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-medium">平台规模大 (25)</span>
+                            <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-medium">产品种类齐全 (22)</span>
+                            <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-medium">配送速度快 (20)</span>
+                            <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-medium">价格有优势 (18)</span>
+                            <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-medium">服务态度好 (15)</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold text-rose-400 mb-3 flex items-center gap-2">
+                            <span>😔</span> 负面特征词
+                        </h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-xs font-medium">价格波动 (8)</span>
+                            <span class="px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-xs font-medium">库存不足 (5)</span>
+                            <span class="px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-xs font-medium">售后响应慢 (3)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-divider mb-16"></div>
+
+            <!-- Section 5: 场景问题明细 -->
+            <section id="scenarios" class="mb-16 slide-up" style="animation-delay: 0.5s">
+                <div class="flex items-center mb-8">
+                    <span class="text-[#00f0ff] text-2xl mr-3"><i class="fa fa-question-circle"></i></span>
+                    <h2 class="text-2xl md:text-3xl font-bold">场景问题明细</h2>
+                </div>
+
+                <p class="text-sm text-[hsl(var(--hero-sub)/70)] mb-6">话题：口腔耗材采购平台（20 条核心场景问题深度监控）</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <!-- 问题 1 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 1</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">33.3%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">牙科诊所日常耗材一般都在哪个平台采购比较方便？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：DeepSeek、通义千问</div>
+                    </div>
+
+                    <!-- 问题 2 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 2</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">50.0%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">有没有专门做口腔诊所耗材的一站式在线平台推荐？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：百度AI、DeepSeek、通义千问</div>
+                    </div>
+
+                    <!-- 问题 3 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 3</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">66.7%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">补牙、种牙这些材料网上采购平台可靠吗？有哪些靠谱平台？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、Kimi、通义千问</div>
+                    </div>
+
+                    <!-- 问题 4 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 4</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">66.7%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">口腔门诊想线上采购耗材，有没有适合长期合作的平台？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、DeepSeek、通义千问</div>
+                    </div>
+
+                    <!-- 问题 5 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 5</span>
+                            <span class="text-xs font-bold text-emerald-400">83.3%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">牙科耗材采购平台怎么选哪些更适合诊所日常进货？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、Kimi、通义千问、豆包</div>
+                    </div>
+
+                    <!-- 问题 6 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 6</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">66.7%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">新开的诊所去哪个牙科 哪个牙科耗材采购平台</p>
+                        <div class="text-[10px] text-slate-400">在线平台：百度AI、DeepSeek、通义千问、豆包</div>
+                    </div>
+
+                    <!-- 问题 7 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 7</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">33.3%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">耗材平台采购更方便？ 活动优惠力度比较大？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：百度AI、通义千问</div>
+                    </div>
+
+                    <!-- 问题 8 - 100% 满分高亮样式 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500 transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">问题 8</span>
+                            <span class="text-xs font-bold text-emerald-400">100%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">牙科耗材种类比较多，有没有分类齐全的线上采购平台？</p>
+                        <div class="text-[10px] text-emerald-400">在线平台：全平台在线</div>
+                    </div>
+
+                    <!-- 问题 9 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 9</span>
+                            <span class="text-xs font-bold text-emerald-400">83.3%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">哪些口腔器械耗材平台可以满足门诊全流程采购需求？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、DeepSeek、通义千问、豆包</div>
+                    </div>
+
+                    <!-- 问题 10 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 10</span>
+                            <span class="text-xs font-bold text-emerald-400">83.3%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">适合中小型口腔门诊的耗材在线平台有哪些？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、DeepSeek、通义千问、豆包</div>
+                    </div>
+
+                    <!-- 问题 11 - 100% 满分高亮样式 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500 transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">问题 11</span>
+                            <span class="text-xs font-bold text-emerald-400">100%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">不同牙科耗材采购平台有什么区别，有推荐的吗？</p>
+                        <div class="text-[10px] text-emerald-400">在线平台：全平台在线</div>
+                    </div>
+
+                    <!-- 问题 12 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 12</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">66.7%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">补牙材料线上采购哪个平台比较全？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、通义千问、豆包</div>
+                    </div>
+
+                    <!-- 问题 13 - 100% 满分高亮样式 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500 transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">问题 13</span>
+                            <span class="text-xs font-bold text-emerald-400">100%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">种植牙相关耗材采购，有没有专业的口腔平台推荐？</p>
+                        <div class="text-[10px] text-emerald-400">在线平台：全平台在线</div>
+                    </div>
+
+                    <!-- 问题 14 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 14</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">50.0%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">牙科修复材料一般在哪个平台买更方便？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、通义千问</div>
+                    </div>
+
+                    <!-- 问题 15 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 15</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">83.3%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">门诊想买正畸耗材，有没有靠谱的口腔耗材采购平台？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、DeepSeek、通义千问、豆包</div>
+                    </div>
+
+                    <!-- 问题 16 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 16</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">50.0%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">牙科耗材网上平台能不能买到常用种植配件？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、通义千问</div>
+                    </div>
+
+                    <!-- 问题 17 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 17</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">66.7%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">牙科耗材采购平台哪家性价比高，适合长期进货？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、DeepSeek、通义千问</div>
+                    </div>
+
+                    <!-- 问题 18 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 18</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">66.7%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">口腔门诊采购耗材最怕缺货，哪些平台库存更稳定？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、Kimi、通义千问</div>
+                    </div>
+
+                    <!-- 问题 19 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 19</span>
+                            <span class="text-xs font-bold text-emerald-400">83.3%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">哪些牙科耗材平台配送快、售后响应及时？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：元宝、百度AI、Kimi、通义千问、豆包</div>
+                    </div>
+
+                    <!-- 问题 20 -->
+                    <div class="liquid-glass rounded-xl p-4 border border-[#00f0ff]/30 hover:border-[#00f0ff] transition-all duration-300">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-[#00f0ff] bg-cyan-500/10 px-2 py-0.5 rounded">问题 20</span>
+                            <span class="text-xs font-bold text-[#00f0ff]">50.0%</span>
+                        </div>
+                        <p class="text-xs font-medium text-white mb-2 leading-relaxed">有没有免费送牙科软件的耗材采购平台？</p>
+                        <div class="text-[10px] text-slate-400">在线平台：Kimi、通义千问、豆包</div>
+                    </div>
+                </div>
+
+                <div class="liquid-glass rounded-xl p-8">
+                    <h3 class="text-xl font-bold mb-4 text-[#00f0ff]">📌 场景问题洞察结论</h3>
+                    <div class="space-y-3 text-[hsl(var(--hero-sub))] text-sm">
+                        <p>基于六大 AI 平台的场景问题曝光监测，励齿医疗在 20 个核心采购高频问题中，有 <span class="text-[#00f0ff] font-bold">4 个实现了 100% 满分曝光</span>（集中于“牙科耗材种类、种植牙相关耗材、区别推荐”等核心大词），整体可见度保持在较高区间。部分低频及关联搜索问题（如“日常耗材采购方便度”）属于下一步优化攻坚的重点方向。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="text-center text-[hsl(var(--hero-sub)/50)] text-sm pt-12 border-t border-white/10">
+                <p>励齿医疗 x 微盟星启 · GEO 分析报告</p>
+                <p class="mt-2">数据来源：微盟星启 GEO 监控平台 + 各大 AI 模型接口实时诊断（DeepSeek/Kimi/通义千问/元宝/豆包/百度AI）</p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Video Fade Loop Controller
+        const video = document.getElementById('bgVideo');
+        let fadeInStartTime = null;
+        let fadeOutStartTime = null;
+        const FADE_DURATION = 500; // 0.5s
+
+        function fadeIn(timestamp) {
+            if (!fadeInStartTime) fadeInStartTime = timestamp;
+            const elapsed = timestamp - fadeInStartTime;
+            const progress = Math.min(elapsed / FADE_DURATION, 1);
+            
+            video.style.opacity = progress * 0.3; // 降低视频透明度，避免抢焦
+            
+            if (progress < 1) {
+                requestAnimationFrame(fadeIn);
+            }
+        }
+
+        function fadeOut(timestamp) {
+            if (!fadeOutStartTime) fadeOutStartTime = timestamp;
+            const elapsed = timestamp - fadeOutStartTime;
+            const progress = Math.min(elapsed / FADE_DURATION, 1);
+            
+            video.style.opacity = 0.3 * (1 - progress);
+            
+            if (progress < 1) {
+                requestAnimationFrame(fadeOut);
+            } else {
+                video.style.opacity = 0;
+                fadeInStartTime = null;
+                fadeOutStartTime = null;
+                setTimeout(() => {
+                    video.currentTime = 0;
+                    video.play();
+                    requestAnimationFrame(fadeIn);
+                }, 100);
+            }
+        }
+
+        video.addEventListener('loadedmetadata', () => {
+            video.play();
+            requestAnimationFrame(fadeIn);
+        });
+
+        video.addEventListener('ended', () => {
+            requestAnimationFrame(fadeOut);
+        });
+
+        // ==================== ECharts 数据渲染与暗黑主题美化 ====================
+        const trendData = {
+            dates: ["2026/4/29", "2026/5/2", "2026/5/5", "2026/5/8", "2026/5/11", "2026/5/14", "2026/5/17", "2026/5/20", "2026/5/23", "2026/5/26", "2026/5/29", "2026/6/1", "2026/6/4", "2026/6/7", "2026/6/10"],
+            platforms: {
+                "综合": [74.17, 65.55, 63.03, 75.0, 64.17, 80.0, 76.67, 74.17, 76.03, 79.17, 79.17, 79.17, 82.5, 70.83, 74.51],
+                "豆包": [75.0, 90.0, 80.0, 80.0, 60.0, 90.0, 85.0, 70.0, 75.0, 75.0, 85.0, 75.0, 90.0, 85.0, 55.0],
+                "元宝": [70.0, 65.0, 60.0, 55.0, 45.0, 65.0, 45.0, 80.0, 75.0, 65.0, 85.0, 85.0, 85.0, 85.0, 75.0],
+                "DeepSeek": [65.0, 73.68, 84.21, 80.0, 50.0, 70.0, 75.0, 75.0, 66.67, 80.0, 65.0, 80.0, 65.0, 50.0, 55.0],
+                "百度AI": [80.0, 85.0, 85.0, 85.0, 80.0, 90.0, 90.0, 90.0, 100.0, 95.0, 95.0, 85.0, 100.0, 85.0, 90.0],
+                "通义千问": [90.0, 0.0, 0.0, 95.0, 90.0, 85.0, 90.0, 85.0, 95.0, 95.0, 85.0, 95.0, 100.0, 90.0, 100.0],
+                "Kimi": [65.0, 80.0, 70.0, 55.0, 60.0, 80.0, 75.0, 45.0, 45.0, 65.0, 60.0, 55.0, 55.0, 30.0, 40.0]
+            }
+        };
+
+        const themeColors = {
+            "综合": "#00f0ff",      // 极光青色
+            "豆包": "#a855f7",      // 紫罗兰
+            "元宝": "#3b82f6",      // 科技蓝
+            "DeepSeek": "#10b981",  // 薄荷绿
+            "百度AI": "#ec4899",    // 胭脂粉
+            "通义千问": "#f59e0b",  // 琥珀黄
+            "Kimi": "#14b8a6"       // 湖水绿
+        };
+
+        // 1. 可见度变化趋势图
+        const visDom = document.getElementById('visibility-chart');
+        const visChart = echarts.init(visDom);
+        const visOption = {
+            backgroundColor: 'transparent',
+            tooltip: { 
+                trigger: 'axis',
+                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                textStyle: { color: '#ffffff' }
+            },
+            legend: {
+                data: ['综合', '豆包', '元宝', 'DeepSeek', '百度AI', '通义千问', 'Kimi'],
+                textStyle: { color: 'rgba(255, 255, 255, 0.7)', fontSize: 10 },
+                bottom: '0%'
+            },
+            grid: { top: '10%', bottom: '15%', left: '10%', right: '5%' },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: trendData.dates,
+                axisLabel: { color: 'rgba(255, 255, 255, 0.5)', fontSize: 9 },
+                axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } }
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: { 
+                    formatter: '{value}%',
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    fontSize: 9
+                },
+                splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.05)' } }
+            },
+            series: Object.entries(trendData.platforms).map(([name, values]) => ({
+                name,
+                type: 'line',
+                smooth: true,
+                symbolSize: name === '综合' ? 8 : 4,
+                lineStyle: { 
+                    width: name === '综合' ? 3 : 1.5,
+                    color: themeColors[name]
+                },
+                itemStyle: { color: themeColors[name] },
+                data: values
+            }))
+        };
+        visChart.setOption(visOption);
+
+        // 2. 品牌露出次数趋势图
+        const exposureData = {
+            dates: ["2026/4/29", "2026/5/2", "2026/5/5", "2026/5/8", "2026/5/11", "2026/5/14", "2026/5/17", "2026/5/20", "2026/5/23", "2026/5/26", "2026/5/29", "2026/6/1", "2026/6/4", "2026/6/7", "2026/6/10"],
+            platforms: {
+                "综合": [89, 78, 75, 90, 77, 96, 92, 89, 92, 95, 95, 95, 99, 85, 89]
+            }
+        };
+
+        const brandDom = document.getElementById('brand-exposure-chart');
+        const brandChart = echarts.init(brandDom);
+        const brandOption = {
+            backgroundColor: 'transparent',
+            tooltip: { 
+                trigger: 'axis',
+                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                textStyle: { color: '#ffffff' }
+            },
+            grid: { top: '10%', bottom: '15%', left: '10%', right: '5%' },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: exposureData.dates,
+                axisLabel: { color: 'rgba(255, 255, 255, 0.5)', fontSize: 9 },
+                axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } }
+            },
+            yAxis: { 
+                type: 'value',
+                axisLabel: { color: 'rgba(255, 255, 255, 0.5)', fontSize: 9 },
+                splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.05)' } }
+            },
+            series: [{
+                name: '综合品牌露出',
+                data: exposureData.platforms.综合,
+                type: 'line',
+                smooth: true,
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(0, 240, 255, 0.25)' },
+                        { offset: 1, color: 'rgba(0, 240, 255, 0.00)' }
+                    ])
+                },
+                lineStyle: { color: '#00f0ff', width: 2.5 },
+                itemStyle: { color: '#00f0ff' }
+            }]
+        };
+        brandChart.setOption(brandOption);
+
+        // 响应式调整
+        window.addEventListener('resize', () => {
+            visChart.resize();
+            brandChart.resize();
+        });
+
+        // 滚动动画控制
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(30px)';
+            section.style.transition = 'all 0.6s ease-out';
+            observer.observe(section);
+        });
+
+        // 导航锚点平滑滚动
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
