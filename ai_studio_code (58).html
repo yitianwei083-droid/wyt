@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>不想上班·漂浮吐槽板</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    body {
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 第一屏 首页 */
+    .page-home {
+      width: 100%;
+      height: 100vh;
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)),
+        url("home-bg.jpg") center center / cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 100;
+      position: relative;
+    }
+
+    .home-title {
+      font-size: 8vw;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .home-title:hover {
+      color: #ffdd44;
+      transform: scale(1.03);
+    }
+
+    .tip-home {
+      margin-top: 24px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 14px;
+      text-shadow: 0 1px 5px rgba(0, 0, 0, 0.6);
+    }
+
+    /* 第二屏 深色背景 */
+    .page-board {
+      width: 100%;
+      height: 100vh;
+      display: none;
+      background: #080816;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 震屏动效 */
+    .page-board.screen-shake {
+      animation: screenShakeAnim 0.25s ease-in-out;
+    }
+
+    @keyframes screenShakeAnim {
+      0% { transform: translate(0, 0); }
+      10% { transform: translate(-5px, 4px) rotate(-0.5deg); }
+      20% { transform: translate(4px, -3px) rotate(0.5deg); }
+      30% { transform: translate(-4px, -1px) rotate(-0.3deg); }
+      40% { transform: translate(3px, 3px) rotate(0.3deg); }
+      50% { transform: translate(-2px, -3px) rotate(-0.1deg); }
+      60% { transform: translate(2px, 2px) rotate(0.1deg); }
+      80% { transform: translate(-1px, -1px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* 2D 果冻软体物理画布层 (纯原生 Canvas) */
+    #jellyCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1; /* 衬于交互微粒之下 */
+    }
+
+    /* 粒子层容器 */
+    #particleContainer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* -------------------------------------------
+       大炮展示区域（放置于右侧红框区域）
+    -------------------------------------------- */
+    .cannon-container {
+      position: absolute;
+      right: 12%;
+      top: 45%;
+      transform: translateY(-50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 5;
+    }
+
+    /* 大炮背部氛围灯 */
+    .cannon-glow {
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .cannon-wrapper {
+      position: relative;
+      width: 320px;
+      height: 298px;
+      z-index: 2;
+      cursor: pointer; /* 鼠标悬停显示可点击大炮 */
+    }
+
+    /* 大炮 SVG */
+    .cannon-svg {
+      width: 100%;
+      height: 100%;
+      transform-origin: 75% 70%;
+      transition: filter 0.1s ease;
+    }
+
+    /* 膛压积蓄颤动效果 */
+    .cannon-wrapper.charged {
+      animation: barrelTremble 0.12s infinite linear;
+    }
+    .cannon-wrapper.charged .cannon-svg {
+      filter: brightness(1.4) drop-shadow(0 0 12px #ff9f43);
+    }
+
+    @keyframes barrelTremble {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-2px, 1.5px); }
+      50% { transform: translate(1.5px, -1.5px); }
+      75% { transform: translate(-1.5px, -1px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* 后坐力震动 */
+    .cannon-wrapper.animating .cannon-svg {
+      animation: cannonRecoil 1.2s cubic-bezier(0.15, 0.85, 0.3, 1) forwards;
+    }
+
+    @keyframes cannonRecoil {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      5% { transform: translate(30px, 18px) rotate(3.5deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    /* 炮口火焰 */
+    .cannon-flash {
+      position: absolute;
+      left: 8%;
+      top: 24%;
+      width: 50px;
+      height: 50px;
+      background: radial-gradient(circle, #ffffff 0%, #ff9f43 40%, rgba(255, 107, 53, 0) 70%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    .cannon-wrapper.animating .cannon-flash {
+      animation: flashBurst 0.7s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+
+    @keyframes flashBurst {
+      0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 1;
+        filter: blur(0px);
+      }
+      20% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 1;
+        filter: blur(1px);
+      }
+      100% {
+        transform: translate(-90px, -70px) scale(3.5);
+        opacity: 0;
+        filter: blur(10px);
+      }
+    }
+
+    /* 空气音爆圈 */
+    .cannon-shockwave {
+      position: absolute;
+      left: 8%;
+      top: 24%;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0.1);
+      pointer-events: none;
+      z-index: 7;
+    }
+
+    .cannon-wrapper.animating .cannon-shockwave {
+      animation: shockwaveAnim 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+
+    @keyframes shockwaveAnim {
+      0% {
+        transform: translate(-50%, -50%) scale(0.1);
+        opacity: 1;
+        border-width: 4px;
+      }
+      100% {
+        transform: translate(-150px, -110px) scale(3.8);
+        opacity: 0;
+        border-width: 1px;
+      }
+    }
+
+    /* 飞溅的火星 */
+    .cannon-spark {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: #ffb830;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 8;
+      box-shadow: 0 0 6px #ff3d3d, 0 0 12px #ffbe53;
+    }
+
+    /* 飞逸出的云雾烟圈 */
+    .cannon-smoke {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 50%;
+      filter: blur(8px);
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    /* -------------------------------------------
+       底部长条状胶囊吐槽触发栏 (Pill-shaped Bar)
+    -------------------------------------------- */
+    .bottom-tip-bar {
+      position: fixed;
+      bottom: 35px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      padding: 10px 28px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+
+    .bottom-tip-bar:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(-50%) scale(1.03);
+      box-shadow: 0 12px 45px rgba(0, 0, 0, 0.6);
+    }
+
+    .bottom-tip-bar:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* -------------------------------------------
+       飞行装弹（等离子文本弹丸）
+    -------------------------------------------- */
+    .cannon-ammo {
+      position: absolute;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, #ff9f43, #ff3d3d);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      border-radius: 999px;
+      white-space: nowrap;
+      box-shadow: 0 0 15px #ff9f43, 0 0 5px #ff3d3d;
+      pointer-events: none;
+      z-index: 999;
+      transform-origin: center;
+    }
+
+    /* 返回首页按钮 */
+    .back-btn {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      cursor: pointer;
+      z-index: 99;
+      backdrop-filter: blur(4px);
+    }
+
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+      .cannon-container {
+        right: auto;
+        left: 50%;
+        top: 40%;
+        transform: translate(-50%, -50%);
+      }
+      .bottom-input-bar {
+        width: 85%;
+        bottom: 24px;
+      }
+      .back-btn {
+        top: 16px;
+        left: 16px;
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+      .cannon-wrapper {
+        width: 240px;
+        height: 223px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 第一屏 首页 -->
+  <div class="page-home" id="pageHome">
+    <div class="home-title" id="enterBoard">不想上班</div>
+    <div class="tip-home">点击文字进入漂浮吐槽板，所有内容仅保存在本机</div>
+  </div>
+
+  <!-- 第二屏 深色吐槽页面 -->
+  <div class="page-board" id="pageBoard">
+    <!-- 原生果冻物理小球画布 -->
+    <canvas id="jellyCanvas"></canvas>
+
+    <!-- 微粒特效层（烟雾、火花） -->
+    <div id="particleContainer"></div>
+
+    <!-- 右侧指定位置大炮 -->
+    <div class="cannon-container">
+      <div class="cannon-glow"></div>
+      <div class="cannon-wrapper" id="cannonClickArea">
+        <div class="cannon-shockwave"></div>
+        <div class="cannon-flash"></div>
+        
+        <!-- 大炮 SVG -->
+        <svg class="cannon-svg" viewBox="0 0 1101 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7366">
+          <path d="M722.127507 627.283454h374.639647v184.698925h-374.639647z" fill="#45575C" p-id="7367"></path>
+          <path d="M246.901286 688.064846a285.285498 276.669463 90 1 0 553.338925 0 285.285498 276.669463 90 1 0-553.338925 0Z" fill="#DEB290" p-id="7368"></path>
+          <path d="M303.117533 688.064846a285.285498 248.561339 90 1 0 497.122678 0 285.285498 248.561339 90 1 0-497.122678 0Z" fill="#FFCDA6" p-id="7369"></path>
+          <path d="M405.607753 689.90985a168.278837 146.616952 90 1 0 293.233903 0 168.278837 146.616952 90 1 0-293.233903 0Z" fill="#636363" p-id="7370"></path>
+          <path d="M503.189991 689.90985a62.63993 54.574238 90 1 0 109.148476 0 62.63993 54.574238 90 1 0-109.148476 0Z" fill="#BFBFBF" p-id="7371"></path>
+          <path d="M686.395771 519.294308m-310.195313 0a310.195313 310.195313 0 1 0 620.390626 0 310.195313 310.195313 0 1 0-620.390626 0Z" fill="#51666E" p-id="7372"></path>
+          <path d="M536.598555 740.243736L83.516899 465.514009C38.081974 435.885674 19.523665 371.360141 42.268194 322.11341l35.984352-127.503789c22.744529-49.24222 82.867313-73.809198 133.584635-54.605815l537.748863 106.496s152.503824 110.434115 123.579207 289.237146c-28.924617 178.79852-271.409621 247.000529-336.566696 204.506784z" fill="#51666E" p-id="7373"></path>
+          <path d="M686.395771 209.103507c-20.195806 0-39.917956 1.993868-59.044652 5.679365 16.135894 35.073128 48.200176 74.79711 100.627172 118.486273 0 0-27.891595-78.162326 59.022097-80.715559 86.90467-2.553233 230.476687 177.923383 163.803912 367.57089-13.370643 38.018819-9.130291 53.983295 4.831295 53.153268a308.67059 308.67059 0 0 0 40.955489-153.983436c0-171.310238-138.885075-310.190802-310.195313-310.190801z" fill="#647E87" p-id="7374"></path>
+          <path d="M996.591084 519.294308a309.257022 309.257022 0 0 0-19.573287-108.544c17.268159 178.816564-53.360775 243.504493-132.745586 285.163701-137.026537 71.914573-320.417269 24.616599-268.815788 12.703013 81.500476-18.815436 131.721586-151.209163 131.721586-151.209163-19.000388-43.206485-157.889974 188.447577-317.435489 52.729234 38.844335 126.980511 156.942661 219.338996 296.644229 219.338995 171.31926 0.009022 310.204335-138.867031 310.204335-310.18178z" fill="#45575C" p-id="7375"></path>
+          <path d="M544.262767 442.462731a94.221533 94.221533 0 0 1-34.062661-9.468616L176.691877 310.750167c-39.728493-19.771771-54.014872-80.914044-31.924441-114.309074 22.094943-33.395031 72.198767-57.971031 111.92726-38.208282l307.249621 73.50696c39.710449 19.76726 85.88067 118.725357 58.183049 176.579101-12.37822 25.861639-46.937093 36.746714-77.864599 34.143859z" fill="#647E87" opacity=".6" p-id="7376"></path>
+          <path d="M621.112388 612.951965c-40.305903 6.31993-75.207612 3.685498-94.528282-7.92585L73.493427 365.022167c-14.453286-8.6837-26.154855-20.646907-34.703224-34.346854-17.065163 47.929515 1.840493 106.89748 44.690608 134.838696l350.753832 203.852687c66.956969-12.071471 129.804405-31.29741 186.877745-56.414731zM867.337022 420.340722a293.635383 293.635383 0 0 0-3.135154-11.051982c-0.35637 2.426925-0.62252 4.826784-1.055577 7.280775a180.386396 180.386396 0 0 1-3.013357 13.898432c2.44948-3.351683 4.85385-6.730432 7.204088-10.127225z" fill="#45575C" p-id="7377"></path>
+          <path d="M639.359436 212.653674a307.524793 307.524793 0 0 0-30.611736 6.247753c67.489269 42.980934 112.297163 118.409586 112.297163 204.348899 0 133.751542-108.422203 242.169233-242.169233 242.169233-24.945903 0-49.003137-3.780229-71.648423-10.785832a309.040493 309.040493 0 0 0 15.030696 27.300652 265.134802 265.134802 0 0 0 56.617727 6.125956c146.260581 0 264.81452-118.553938 264.81452-264.81452 0-85.898714-40.928423-162.211524-104.330714-210.592141z" fill="#647E87" p-id="7378"></path>
+          <path d="M722.127507 422.749604c0-74.282855-32.05526-140.987207-82.989111-187.315313l-34.716757-10.781322c-3.811806 0.816493-7.61459 1.651031-11.367754 2.620899 64.55711 41.113374 107.416247 113.267031 107.416247 195.475736 0 127.936846-103.717216 231.654062-231.658573 231.654061-23.86326 0-46.873938-3.626855-68.531312-10.316687a292.945198 292.945198 0 0 0 6.910872 13.321022l22.455824 15.553974c12.770678 1.998379 25.834573 3.094555 39.169127 3.094555 139.900053 0 253.311436-113.402361 253.311437-253.306925z" fill="#45575C" p-id="7379"></path>
+          <path d="M502.82911 703.515066a285.285498 276.669463 90 1 0 553.338925 0 285.285498 276.669463 90 1 0-553.338925 0Z" fill="#DEB290" p-id="7380"></path>
+          <path d="M559.045357 703.515066a285.285498 248.561339 90 1 0 497.122678 0 285.285498 248.561339 90 1 0-497.122678 0Z" fill="#FFCDA6" p-id="7381"></path>
+          <path d="M661.531066 705.36007a168.278837 146.616952 90 1 0 293.233903 0 168.278837 146.616952 90 1 0-293.233903 0Z" fill="#636363" p-id="7382"></path>
+          <path d="M759.113304 705.36007a62.63993 54.574238 90 1 0 109.148476 0 62.63993 54.574238 90 1 0-109.148476 0Z" fill="#BFBFBF" p-id="7383"></path>
+          <path d="M28.026357 263.202251a131.157709 184.360599 20.138 1 0 246.27906 90.310595 131.157709 184.360599 20.138 1 0-246.27906-90.310595Z" fill="#51666E" p-id="7384"></path>
+          <path d="M25.134327 260.52065a114.886485 177.445216 20.138 1 0 215.726056 79.106801 114.886485 177.445216 20.138 1 0-215.726056-79.106801Z" fill="#6D8994" p-id="7385"></path>
+          <path d="M55.360052 270.862668a80.697515 124.634784 20.132 1 0 151.534144 55.549608 80.697515 124.634784 20.132 1 0-151.534144-55.549608Z" p-id="7386"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 底部长条状胶囊吐槽触发栏 -->
+    <div class="bottom-tip-bar" id="bottomTipBar">
+      点击大炮，怒射：艹不想上班！🔥
+    </div>
+
+    <!-- 返回首页按钮 -->
+    <div class="back-btn" id="backHomeBtn">返回首页</div>
+  </div>
+
+<script>
+  // ------------------------------------------------------------------
+  // 【一、安全的全局基础声明与基础交互】：断网、100%可用、绝不卡死
+  // ------------------------------------------------------------------
+  const STORAGE_KEY = "floatTalkData";
+  const pageHome = document.getElementById("pageHome");
+  const pageBoard = document.getElementById("pageBoard");
+  const enterBoard = document.getElementById("enterBoard");
+  const backHomeBtn = document.getElementById("backHomeBtn");
+  const particleContainer = document.getElementById("particleContainer");
+  const bottomTipBar = document.getElementById("bottomTipBar");
+  const cannonClickArea = document.getElementById("cannonClickArea");
+  const cannonWrapper = document.querySelector(".cannon-wrapper");
+
+  let isFiring = false;
+
+  // 打开与关闭页面
+  enterBoard.onclick = () => {
+    pageHome.style.display = "none";
+    pageBoard.style.display = "block";
+    resizeCanvas();
+    loadAllBubbles();
+  };
+
+  backHomeBtn.onclick = () => {
+    pageBoard.style.display = "none";
+    pageHome.style.display = "flex";
+  };
+
+  function unlockInput() {
+    isFiring = false;
+  }
+
+  // ------------------------------------------------------------------
+  // 【二、手写质点弹簧果冻软体物理引擎】：零外部库依赖，超高性能 60FPS
+  // ------------------------------------------------------------------
+  const canvas = document.getElementById("jellyCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const jellyBalls = [];
+  const maxJellyBalls = 15; // 限制同屏果冻球数量防止拥挤
+
+  // 鼠标位置与排斥磁场半径
+  const mouse = { x: -1000, y: -1000, active: false };
+
+  // 软体果冻球类定义 (2D Verlet Integration Mass-Spring)
+  class JellyBall {
+    constructor(x, y, text, radius = 55) {
+      this.text = text;
+      this.radius = radius;
+      
+      // 虚拟中心质点
+      this.cx = x;
+      this.cy = y;
+      this.pcx = x;
+      this.pcy = y;
+
+      // 边缘点（8个方向环绕形成软壳）
+      this.numPoints = 8;
+      this.points = [];
+      for (let i = 0; i < this.numPoints; i++) {
+        const angle = (i / this.numPoints) * Math.PI * 2;
+        const px = x + Math.cos(angle) * radius;
+        const py = y + Math.sin(angle) * radius;
+        this.points.push({
+          x: px,
+          y: py,
+          px: px,
+          py: py,
+          angle: angle
+        });
+      }
+
+      this.color = "#ffde00"; // 霓虹黄边框
+      this.bgColor = "rgba(17, 17, 28, 0.95)"; // 暗色发光胶囊底色
+    }
+
+    applyForce(fx, fy) {
+      this.cx += fx * 0.5;
+      this.cy += fy * 0.5;
+      for (const p of this.points) {
+        p.x += fx;
+        p.y += fy;
+      }
+    }
+
+    update(gravityX, gravityY, friction, width, height) {
+      // 1. 虚拟中心质点物理更新 (Verlet 积分)
+      const tempCx = this.cx;
+      const tempCy = this.cy;
+      this.cx += (this.cx - this.pcx) * friction + gravityX;
+      this.cy += (this.cy - this.pcy) * friction + gravityY;
+      this.pcx = tempCx;
+      this.pcy = tempCy;
+
+      // 2. 边缘质点物理更新
+      for (const p of this.points) {
+        const tempX = p.x;
+        const tempY = p.y;
+        p.x += (p.x - p.px) * friction + gravityX;
+        p.y += (p.y - p.py) * friction + gravityY;
+        p.px = tempX;
+        p.py = tempY;
+      }
+
+      // 3. 弹簧约束迭代解算（迭代4次以增加弹性硬度、减小崩塌）
+      const stiffness = 0.35; // 弹簧系数
+      const edgeLength = 2 * this.radius * Math.sin(Math.PI / this.numPoints);
+
+      for (let iter = 0; iter < 4; iter++) {
+        // A. 径向弹簧约束：虚拟中心点至每一个边缘点保持 radius 长度
+        for (const p of this.points) {
+          const dx = p.x - this.cx;
+          const dy = p.y - this.cy;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const diff = this.radius - dist;
+          const percent = (diff / dist) * 0.5 * stiffness;
+          const offsetX = dx * percent;
+          const offsetY = dy * percent;
+
+          this.cx -= offsetX;
+          this.cy -= offsetY;
+          p.x += offsetX;
+          p.y += offsetY;
+        }
+
+        // B. 环向结构约束：相邻两个边缘点之间维持设计间距，防止小球自绞
+        for (let i = 0; i < this.numPoints; i++) {
+          const pA = this.points[i];
+          const pB = this.points[(i + 1) % this.numPoints];
+          const dx = pB.x - pA.x;
+          const dy = pB.y - pA.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const diff = edgeLength - dist;
+          const percent = (diff / dist) * 0.5 * stiffness;
+          const offsetX = dx * percent;
+          const offsetY = dy * percent;
+
+          pA.x -= offsetX;
+          pA.y -= offsetY;
+          pB.x += offsetX;
+          pB.y += offsetY;
+        }
+      }
+
+      // 4. 边界框物理硬阻挡碰撞 (Verlet 边界限制)
+      const margin = this.radius * 0.5;
+      const bounceFriction = 0.85;
+
+      if (this.cx < margin) { this.cx = margin; }
+      if (this.cx > width - margin) { this.cx = width - margin; }
+      if (this.cy < margin) { this.cy = margin; }
+      if (this.cy > height - margin) { this.cy = height - margin; }
+
+      for (const p of this.points) {
+        if (p.x < 5) {
+          p.x = 5;
+          p.px = p.x + (p.x - p.px) * bounceFriction;
+        }
+        if (p.x > width - 5) {
+          p.x = width - 5;
+          p.px = p.x + (p.x - p.px) * bounceFriction;
+        }
+        if (p.y < 5) {
+          p.y = 5;
+          p.py = p.y + (p.y - p.py) * bounceFriction;
+        }
+        if (p.y > height - 5) {
+          p.y = height - 5;
+          p.py = p.y + (p.y - p.py) * bounceFriction;
+        }
+      }
+    }
+
+    draw(renderCtx) {
+      // 5. 采用二次贝塞尔曲线 (quadraticCurveTo) 自动拟合圆滑闭合软壳
+      renderCtx.beginPath();
+      const pLast = this.points[this.numPoints - 1];
+      const pFirst = this.points[0];
+      const startX = (pLast.x + pFirst.x) / 2;
+      const startY = (pLast.y + pFirst.y) / 2;
+
+      renderCtx.moveTo(startX, startY);
+      for (let i = 0; i < this.numPoints; i++) {
+        const pCurrent = this.points[i];
+        const pNext = this.points[(i + 1) % this.numPoints];
+        const xc = (pCurrent.x + pNext.x) / 2;
+        const yc = (pCurrent.y + pNext.y) / 2;
+        renderCtx.quadraticCurveTo(pCurrent.x, pCurrent.y, xc, yc);
+      }
+      renderCtx.closePath();
+
+      // Q 弹球内部填充
+      renderCtx.fillStyle = this.bgColor;
+      renderCtx.fill();
+
+      // 霓虹描边与立体阴影
+      renderCtx.lineWidth = 2.5;
+      renderCtx.strokeStyle = this.color;
+      renderCtx.shadowColor = this.color;
+      renderCtx.shadowBlur = 10;
+      renderCtx.stroke();
+      renderCtx.shadowBlur = 0; // 恢复文字免模糊
+
+      // 6. 实时追踪气泡当前的重心 (Centroid)，完美重绘文字，产生 Q 弹晃动效果
+      let avgX = 0;
+      let avgY = 0;
+      for (const p of this.points) {
+        avgX += p.x;
+        avgY += p.y;
+      }
+      avgX /= this.numPoints;
+      avgY /= this.numPoints;
+
+      renderCtx.fillStyle = "#ffde00";
+      renderCtx.font = "bold 13px system-ui, -apple-system";
+      renderCtx.textAlign = "center";
+      renderCtx.textBaseline = "middle";
+      renderCtx.fillText(this.text, avgX, avgY);
+    }
+  }
+
+  // 二维画布自适应
+  function resizeCanvas() {
+    canvas.width = canvas.parentNode.offsetWidth || window.innerWidth;
+    canvas.height = canvas.parentNode.offsetHeight || window.innerHeight;
+  }
+  window.addEventListener("resize", resizeCanvas);
+
+  // 捕获鼠标及触屏滑动，实时注入大范围排斥磁场 (Deform Field)
+  function applyMouseRepulsion(e) {
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    mouse.x = clientX;
+    mouse.y = clientY;
+    mouse.active = true;
+
+    // 对每一个果冻球的每个边缘点应用非线性推进磁力，形成“推开、揉捏”形变效果
+    const forceRadius = 135; // 排斥力圈大小
+    for (const ball of jellyBalls) {
+      for (const p of ball.points) {
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < forceRadius && dist > 1) {
+          const intensity = ((forceRadius - dist) / forceRadius) * 1.6; // 力量强度
+          p.x += (dx / dist) * intensity;
+          p.y += (dy / dist) * intensity;
+        }
+      }
+    }
+  }
+
+  window.addEventListener("pointermove", applyMouseRepulsion);
+  window.addEventListener("touchmove", applyMouseRepulsion, { passive: true });
+  window.addEventListener("pointerleave", () => { mouse.active = false; });
+  window.addEventListener("touchend", () => { mouse.active = false; });
+
+  // ------------------------------------------------------------------
+  // 【三、粒子动效系统】
+  // ------------------------------------------------------------------
+  // 喷射火焰粒子
+  function createSparks(startX, startY) {
+    for (let i = 0; i < 10; i++) {
+      const spark = document.createElement('div');
+      spark.className = 'cannon-spark';
+      spark.style.left = `${startX}px`;
+      spark.style.top = `${startY}px`;
+
+      const angle = (190 + Math.random() * 70) * Math.PI / 180;
+      const velocity = 100 + Math.random() * 150;
+      const targetX = Math.cos(angle) * velocity;
+      const targetY = Math.sin(angle) * velocity;
+
+      particleContainer.appendChild(spark);
+
+      spark.animate([
+        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+        { transform: `translate(${targetX}px, ${targetY}px) scale(0)`, opacity: 0 }
+      ], {
+        duration: 300 + Math.random() * 300,
+        easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
+      }).onfinish = () => { spark.remove(); };
+    }
+  }
+
+  // 喷射烟圈
+  function createSmoke(startX, startY) {
+    for (let i = 0; i < 4; i++) {
+      const smoke = document.createElement('div');
+      smoke.className = 'cannon-smoke';
+      
+      const size = 18 + Math.random() * 22;
+      smoke.style.width = `${size}px`;
+      smoke.style.height = `${size}px`;
+      smoke.style.left = `${startX - size/2}px`;
+      smoke.style.top = `${startY - size/2}px`;
+      
+      particleContainer.appendChild(smoke);
+
+      const angle = (195 + Math.random() * 55) * Math.PI / 180;
+      const distance = 50 + Math.random() * 80;
+      const targetX = Math.cos(angle) * distance;
+      const targetY = Math.sin(angle) * distance;
+
+      smoke.animate([
+        { transform: 'translate(0, 0) scale(1)', opacity: 0.65 },
+        { transform: `translate(${targetX}px, ${targetY}px) scale(2.8)`, opacity: 0 }
+      ], {
+        duration: 700 + Math.random() * 500,
+        easing: 'ease-out'
+      }).onfinish = () => { smoke.remove(); };
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // 【四、火力发射、装弹、自动连锁】
+  // ------------------------------------------------------------------
+  
+  // 历史本地记录载入
+  function loadAllBubbles() {
+    jellyBalls.length = 0;
+    const dataList = getLocalData();
+    // 渲染同屏最大限制数量
+    const recentData = dataList.slice(-maxJellyBalls);
+    recentData.forEach(text => {
+      spawnJellyBall(text);
+    });
+  }
+
+  // 在随机非重叠位置安全生成静态果冻球
+  function spawnJellyBall(text) {
+    const rx = Math.max(100, Math.min(canvas.width - 100, Math.random() * canvas.width));
+    const ry = Math.max(100, Math.min(canvas.height - 100, Math.random() * canvas.height));
+    const ball = new JellyBall(rx, ry, text, 52);
+    jellyBalls.push(ball);
+  }
+
+  // 1. 装弹阶段：凝聚弹药、精确飞向尾舱
+  function loadAmmo(text) {
+    try {
+      const inputRect = bottomTipBar.getBoundingClientRect();
+      const startX = inputRect.left + inputRect.width / 2;
+      const startY = inputRect.top + inputRect.height / 2;
+
+      const cannonRect = cannonWrapper.getBoundingClientRect();
+      const breechX = cannonRect.left + (cannonRect.width * 0.55);
+      const breechY = cannonRect.top + (cannonRect.height * 0.65);
+
+      const muzzleX = cannonRect.left + (cannonRect.width * 0.08);
+      const muzzleY = cannonRect.top + (cannonRect.height * 0.24);
+
+      const ammo = document.createElement("div");
+      ammo.className = "cannon-ammo";
+      ammo.innerText = text;
+      ammo.style.left = `${startX}px`;
+      ammo.style.top = `${startY}px`;
+      document.body.appendChild(ammo);
+
+      if (typeof ammo.animate === 'function') {
+        const ammoAnimation = ammo.animate([
+          {
+            left: `${startX}px`,
+            top: `${startY}px`,
+            transform: 'translate(-50%, -50%) scale(1) rotate(0deg)',
+            opacity: 1
+          },
+          {
+            left: `${breechX}px`,
+            top: `${breechY}px`,
+            transform: 'translate(-50%, -50%) scale(0.3) rotate(180deg)',
+            opacity: 0.2
+          }
+        ], {
+          duration: 500,
+          easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
+        });
+
+        ammoAnimation.onfinish = () => {
+          ammo.remove();
+          cannonWrapper.classList.add('charged');
+          
+          setTimeout(() => {
+            cannonWrapper.classList.remove('charged');
+            try {
+              fireCannon(text, muzzleX, muzzleY);
+            } catch (fireErr) {
+              console.error("开炮故障，已执行安全解锁:", fireErr);
+              unlockInput();
+            }
+          }, 150);
+        };
+      } else {
+        ammo.remove();
+        fireCannon(text, muzzleX, muzzleY);
+      }
+    } catch (loadErr) {
+      console.error("装填故障，已执行安全解锁:", loadErr);
+      unlockInput();
+    }
+  }
+
+  // 2. 开炮发射：将新小球装载冲量并在物理引擎中向外推出！
+  function fireCannon(text, muzzleX, muzzleY) {
+    cannonWrapper.classList.remove('animating');
+    void cannonWrapper.offsetWidth; 
+    cannonWrapper.classList.add('animating');
+
+    // 全屏震荡
+    pageBoard.classList.remove('screen-shake');
+    void pageBoard.offsetWidth; 
+    pageBoard.classList.add('screen-shake');
+    setTimeout(() => { pageBoard.classList.remove('screen-shake'); }, 260);
+
+    createSparks(muzzleX, muzzleY);
+    createSmoke(muzzleX, muzzleY);
+
+    // 2.1 创造全新的物理果冻球
+    const ball = new JellyBall(muzzleX, muzzleY, text, 52);
+
+    // 2.2 给边缘的所有质点注入强大的向左上方飞射的冲量（Verlet 速度注入）
+    const angle = (195 + Math.random() * 45) * Math.PI / 180; // 朝向左上方
+    const power = 15 + Math.random() * 7; // 开炮速度
+    const vx = Math.cos(angle) * power;
+    const vy = Math.sin(angle) * power;
+
+    // Verlet 机制通过 current - previous 位置记录差值作为初始速度
+    ball.cx = muzzleX;
+    ball.cy = muzzleY;
+    ball.pcx = muzzleX - vx;
+    ball.pcy = muzzleY - vy;
+    for (const p of ball.points) {
+      p.px = p.x - vx;
+      p.py = p.y - vy;
+    }
+
+    // 压入球群，超出限制时淘汰掉最老的果冻球
+    if (jellyBalls.length >= maxJellyBalls) {
+      jellyBalls.shift();
+    }
+    jellyBalls.push(ball);
+
+    // 激发冷却恢复
+    setTimeout(() => { unlockInput(); }, 800);
+  }
+
+  // 发射总控制入口 (只发射纯粹的“艹不想上班”！)
+  function triggerAutoFire() {
+    if (isFiring) return;
+    isFiring = true;
+
+    try {
+      // 随机挑取略带标点变化的“艹不想上班”，加强连射错落感
+      const words = ["艹不想上班", "艹不想上班！", "艹不想上班！！！", "艹 不 想 上 班"];
+      const text = words[Math.floor(Math.random() * words.length)];
+
+      const dataList = getLocalData();
+      dataList.push(text);
+      saveLocalData(dataList);
+
+      loadAmmo(text);
+    } catch (err) {
+      console.error("发射故障，执行自动解锁解锁:", err);
+      unlockInput();
+    }
+  }
+
+  cannonClickArea.onclick = triggerAutoFire;
+  bottomTipBar.onclick = triggerAutoFire;
+
+  function getLocalData() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }
+
+  function saveLocalData(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  // ------------------------------------------------------------------
+  // 【五、物理引擎实时计算与 Canvas 渲染环 (60FPS)】
+  // ------------------------------------------------------------------
+  function animate() {
+    requestAnimationFrame(animate);
+    
+    // 清屏，保留微量透明度以提供轻微拖尾细节
+    ctx.fillStyle = "rgba(8, 8, 22, 0.4)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const gravityX = 0;
+    const gravityY = 0.22; // 微弱重力
+    const friction = 0.99; // 空气摩擦
+
+    // 5.1 果冻球与果冻球之间的软碰撞排斥（对中心质点进行反推，自动传递给边缘点引发挤压变扁效果）
+    for (let i = 0; i < jellyBalls.length; i++) {
+      for (let j = i + 1; j < jellyBalls.length; j++) {
+        const bA = jellyBalls[i];
+        const bB = jellyBalls[j];
+        const dx = bB.cx - bA.cx;
+        const dy = bB.cy - bA.cy;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const minDist = bA.radius + bB.radius;
+        if (dist < minDist) {
+          const overlap = minDist - dist;
+          // PUSH 物理反推系数
+          const pushX = (dx / dist) * overlap * 0.45;
+          const pushY = (dy / dist) * overlap * 0.45;
+
+          // 将排斥力施加给小球的网格结构，自动引发物理压缩
+          bA.applyForce(-pushX, -pushY);
+          bB.applyForce(pushX, pushY);
+        }
+      }
+    }
+
+    // 5.2 物理迭代更新并渲染
+    for (const ball of jellyBalls) {
+      ball.update(gravityX, gravityY, friction, canvas.width, canvas.height);
+      ball.draw(ctx);
+    }
+  }
+
+  // 启动物理循环
+  animate();
+</script>
+</body>
+</html>
