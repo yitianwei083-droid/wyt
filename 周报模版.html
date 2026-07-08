@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEO DATA - 大健康行业周报</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(at top left, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+        
+        /* 控制页面隐藏/显示的关键样式 */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+            animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 页面切换渐入动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 拟物高级玻璃质感 */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 1px 1px 0 rgba(255, 255, 255, 0.8) inset;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 选中的立体高亮效果 */
+        .selectable-block {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .selectable-block:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
+        }
+        .selectable-block.selected-active {
+            transform: scale(1.02);
+            background: #ffffff;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), 0 20px 25px -5px rgba(99, 102, 241, 0.1);
+        }
+
+        /* 侧边栏激活项样式 */
+        .sidebar-item.active {
+            background-color: rgb(30 41 59);
+            color: #ffffff;
+            box-shadow: inset 4px 0 0 0 #6366f1;
+        }
+
+        /* 呼吸效果 - 用于突出重点新增一列 */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* === 可编辑文本在编辑状态下的样式 === */
+        .editable-text[contenteditable="true"] {
+            outline: 1px dashed #6366f1;
+            background-color: rgba(99, 102, 241, 0.05);
+            border-radius: 4px;
+            padding: 1px 4px;
+            transition: background-color 0.2s;
+        }
+        .editable-text[contenteditable="true"]:focus {
+            outline: 2px solid #6366f1;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border-width:0}.fixed{position:fixed}.relative{position:relative}.left-0{left:0px}.right-8{right:2rem}.top-0{top:0px}.top-6{top:1.5rem}.z-30{z-index:30}.z-50{z-index:50}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.ml-2{margin-left:0.5rem}.ml-64{margin-left:16rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-3{margin-top:0.75rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-1\.5{height:0.375rem}.h-10{height:2.5rem}.h-2{height:0.5rem}.h-3{height:0.75rem}.h-3\.5{height:0.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-8{height:2rem}.h-full{height:100%}.h-screen{height:100vh}.max-h-\[480px\]{max-height:480px}.min-h-\[460px\]{min-height:460px}.min-h-screen{min-height:100vh}.w-1\.5{width:0.375rem}.w-1\/4{width:25%}.w-11{width:2.75rem}.w-3\.5{width:0.875rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-64{width:16rem}.w-8{width:2rem}.w-full{width:100%}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.border-collapse{border-collapse:collapse}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.cursor-pointer{cursor:pointer}.list-disc{list-style-type:disc}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-start{align-items:flex-start}.items-center{align-items:center}.items-baseline{align-items:baseline}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.375rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse))}.divide-slate-100 > :not([hidden]) ~ :not([hidden]){--tw-divide-opacity:1;border-color:rgb(241 245 249 / var(--tw-divide-opacity, 1))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.rounded-l-xl{border-top-left-radius:0.75rem;border-bottom-left-radius:0.75rem}.rounded-r-xl{border-top-right-radius:0.75rem;border-bottom-right-radius:0.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-l-4{border-left-width:4px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-none{border-style:none}.border-amber-100{--tw-border-opacity:1;border-color:rgb(254 243 199 / var(--tw-border-opacity, 1))}.border-amber-500{--tw-border-opacity:1;border-color:rgb(245 158 11 / var(--tw-border-opacity, 1))}.border-blue-100{--tw-border-opacity:1;border-color:rgb(219 234 254 / var(--tw-border-opacity, 1))}.border-emerald-100{--tw-border-opacity:1;border-color:rgb(209 250 229 / var(--tw-border-opacity, 1))}.border-emerald-200\/80{border-color:rgb(167 243 208 / 0.8)}.border-indigo-100{--tw-border-opacity:1;border-color:rgb(224 231 255 / var(--tw-border-opacity, 1))}.border-rose-100{--tw-border-opacity:1;border-color:rgb(255 228 230 / var(--tw-border-opacity, 1))}.border-rose-500{--tw-border-opacity:1;border-color:rgb(244 63 94 / var(--tw-border-opacity, 1))}.border-slate-100{--tw-border-opacity:1;border-color:rgb(241 245 249 / var(--tw-border-opacity, 1))}.border-slate-100\/60{border-color:rgb(241 245 249 / 0.6)}.border-slate-100\/80{border-color:rgb(241 245 249 / 0.8)}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-200\/60{border-color:rgb(226 232 240 / 0.6)}.border-slate-900{--tw-border-opacity:1;border-color:rgb(15 23 42 / var(--tw-border-opacity, 1))}.border-slate-900\/50{border-color:rgb(15 23 42 / 0.5)}.border-transparent{border-color:transparent}.border-l-amber-500{--tw-border-opacity:1;border-left-color:rgb(245 158 11 / var(--tw-border-opacity, 1))}.border-l-rose-500{--tw-border-opacity:1;border-left-color:rgb(244 63 94 / var(--tw-border-opacity, 1))}.border-l-slate-400{--tw-border-opacity:1;border-left-color:rgb(148 163 184 / var(--tw-border-opacity, 1))}.bg-amber-100{--tw-bg-opacity:1;background-color:rgb(254 243 199 / var(--tw-bg-opacity, 1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-amber-50\/40{background-color:rgb(255 251 235 / 0.4)}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-blue-500{--tw-bg-opacity:1;background-color:rgb(59 130 246 / var(--tw-bg-opacity, 1))}.bg-emerald-100{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105 / var(--tw-bg-opacity, 1))}.bg-indigo-50{--tw-bg-opacity:1;background-color:rgb(238 242 255 / var(--tw-bg-opacity, 1))}.bg-indigo-50\/30{background-color:rgb(238 242 255 / 0.3)}.bg-indigo-500{--tw-bg-opacity:1;background-color:rgb(99 102 241 / var(--tw-bg-opacity, 1))}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229 / var(--tw-bg-opacity, 1))}.bg-orange-500{--tw-bg-opacity:1;background-color:rgb(249 115 22 / var(--tw-bg-opacity, 1))}.bg-purple-500{--tw-bg-opacity:1;background-color:rgb(168 85 247 / var(--tw-bg-opacity, 1))}.bg-rose-100{--tw-bg-opacity:1;background-color:rgb(255 228 230 / var(--tw-bg-opacity, 1))}.bg-rose-50{--tw-bg-opacity:1;background-color:rgb(255 241 242 / var(--tw-bg-opacity, 1))}.bg-rose-50\/40{background-color:rgb(255 241 242 / 0.4)}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.bg-slate-200{--tw-bg-opacity:1;background-color:rgb(226 232 240 / var(--tw-bg-opacity, 1))}.bg-slate-200\/60{background-color:rgb(226 232 240 / 0.6)}.bg-slate-50\/30{background-color:rgb(248 250 252 / 0.3)}.bg-slate-50\/40{background-color:rgb(248 250 252 / 0.4)}.bg-slate-50\/50{background-color:rgb(248 250 252 / 0.5)}.bg-slate-50\/80{background-color:rgb(248 250 252 / 0.8)}.bg-slate-600{--tw-bg-opacity:1;background-color:rgb(71 85 105 / var(--tw-bg-opacity, 1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23 / var(--tw-bg-opacity, 1))}.bg-white\/90{background-color:rgb(255 255 255 / 0.9)}.p-3{padding:0.75rem}.p-3\.5{padding:0.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.pb-2{padding-bottom:0.5rem}.pb-4{padding-bottom:1rem}.pl-3{padding-left:0.75rem}.pl-3\.5{padding-left:0.875rem}.pl-4{padding-left:1rem}.pr-2{padding-right:0.5rem}.pt-4{padding-top:1rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-light{font-weight:300}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.tracking-tight{letter-spacing:-0.025em}.tracking-wider{letter-spacing:0.05em}.text-amber-700{--tw-text-opacity:1;color:rgb(180 83 9 / var(--tw-text-opacity, 1))}.text-blue-700{--tw-text-opacity:1;color:rgb(29 78 216 / var(--tw-text-opacity, 1))}.text-emerald-100{--tw-text-opacity:1;color:rgb(209 250 229 / var(--tw-text-opacity, 1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87 / var(--tw-text-opacity, 1))}.text-emerald-800{--tw-text-opacity:1;color:rgb(6 95 70 / var(--tw-text-opacity, 1))}.text-indigo-200{--tw-text-opacity:1;color:rgb(199 210 254 / var(--tw-text-opacity, 1))}.text-indigo-500{--tw-text-opacity:1;color:rgb(99 102 241 / var(--tw-text-opacity, 1))}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity, 1))}.text-indigo-700{--tw-text-opacity:1;color:rgb(67 56 202 / var(--tw-text-opacity, 1))}.text-indigo-900{--tw-text-opacity:1;color:rgb(49 46 129 / var(--tw-text-opacity, 1))}.text-indigo-950{--tw-text-opacity:1;color:rgb(30 27 75 / var(--tw-text-opacity, 1))}.text-rose-600{--tw-text-opacity:1;color:rgb(225 29 72 / var(--tw-text-opacity, 1))}.text-rose-700{--tw-text-opacity:1;color:rgb(190 18 60 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.shadow{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-emerald-600\/10{--tw-shadow-color:rgb(5 150 105 / 0.1);--tw-shadow:var(--tw-shadow-colored)}.shadow-indigo-600\/10{--tw-shadow-color:rgb(79 70 229 / 0.1);--tw-shadow:var(--tw-shadow-colored)}.shadow-indigo-600\/30{--tw-shadow-color:rgb(79 70 229 / 0.3);--tw-shadow:var(--tw-shadow-colored)}.shadow-slate-200\/50{--tw-shadow-color:rgb(226 232 240 / 0.5);--tw-shadow:var(--tw-shadow-colored)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-200{transition-duration:200ms}.after\:absolute::after{content:var(--tw-content);position:absolute}.after\:left-\[2px\]::after{content:var(--tw-content);left:2px}.after\:top-\[2px\]::after{content:var(--tw-content);top:2px}.after\:h-5::after{content:var(--tw-content);height:1.25rem}.after\:w-5::after{content:var(--tw-content);width:1.25rem}.after\:rounded-full::after{content:var(--tw-content);border-radius:9999px}.after\:border::after{content:var(--tw-content);border-width:1px}.after\:border-slate-300::after{content:var(--tw-content);--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity, 1))}.after\:bg-white::after{content:var(--tw-content);--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.after\:transition-all::after{content:var(--tw-content);transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.after\:content-\[\'\'\]::after{--tw-content:'';content:var(--tw-content)}.hover\:border-indigo-400:hover{--tw-border-opacity:1;border-color:rgb(129 140 248 / var(--tw-border-opacity, 1))}.hover\:border-slate-300:hover{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity, 1))}.hover\:bg-indigo-50\/5:hover{background-color:rgb(238 242 255 / 0.05)}.hover\:bg-indigo-700:hover{--tw-bg-opacity:1;background-color:rgb(67 56 202 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-100\/50:hover{background-color:rgb(241 245 249 / 0.5)}.hover\:bg-slate-50\/40:hover{background-color:rgb(248 250 252 / 0.4)}.hover\:bg-slate-900:hover{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:shadow-emerald-600\/20:hover{--tw-shadow-color:rgb(5 150 105 / 0.2);--tw-shadow:var(--tw-shadow-colored)}.hover\:shadow-indigo-600\/20:hover{--tw-shadow-color:rgb(79 70 229 / 0.2);--tw-shadow:var(--tw-shadow-colored)}.group:hover .group-hover\:text-indigo-500{--tw-text-opacity:1;color:rgb(99 102 241 / var(--tw-text-opacity, 1))}.group:hover .group-hover\:text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity, 1))}.peer:checked ~ .peer-checked\:bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229 / var(--tw-bg-opacity, 1))}.peer:checked ~ .peer-checked\:after\:translate-x-full::after{content:var(--tw-content);--tw-translate-x:100%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.peer:checked ~ .peer-checked\:after\:border-white::after{content:var(--tw-content);--tw-border-opacity:1;border-color:rgb(255 255 255 / var(--tw-border-opacity, 1))}.peer:focus ~ .peer-focus\:outline-none{outline:2px solid transparent;outline-offset:2px}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}}@media (min-width: 1024px){.lg\:col-span-2{grid-column:span 2 / span 2}.lg\:col-span-3{grid-column:span 3 / span 3}.lg\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}</style></head>
+<body class="text-slate-800">
+
+    <!-- 顶部右上角浮动编辑控制台 -->
+    <div class="fixed top-6 right-8 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-200 shadow-lg shadow-slate-200/50">
+        <!-- 切换开关 -->
+        <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="edit-toggle" class="sr-only peer" onchange="handleEditToggle(this)">
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+            <span id="toggle-label" class="ml-2 text-xs font-semibold text-slate-500">预览模式</span>
+        </label>
+        <!-- 导出按钮 -->
+        <button onclick="exportHTML()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md shadow-indigo-600/10 transition-colors flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path></svg>
+            保存并导出网页
+        </button>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-950 text-slate-400 h-screen fixed left-0 top-0 flex flex-col border-r border-slate-900/50 z-30">
+        <!-- Logo Header -->
+        <div class="p-6 border-b border-slate-900 flex items-center gap-3">
+            <div class="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-indigo-600/30">G</div>
+            <h1 class="text-white text-base font-bold tracking-wider">GEO DATA</h1>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+            <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:text-white hover:bg-slate-900 active" data-page="overview">
+                <!-- Icon: Chart Square -->
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"></path></svg>
+                周报总览
+            </button>
+            <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:text-white hover:bg-slate-900" data-page="delivery">
+                <!-- Icon: Presentation Chart -->
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                经营交付数据看板
+            </button>
+            <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:text-white hover:bg-slate-900" data-page="project">
+                <!-- Icon: Target -->
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                重点项目推进
+            </button>
+            <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:text-white hover:bg-slate-900" data-page="brand">
+                <!-- Icon: Tag -->
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                微盟星启
+            </button>
+            <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:text-white hover:bg-slate-900" data-page="risk">
+                <!-- Icon: Shield Warning -->
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                监控预警
+            </button>
+            <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:text-white hover:bg-slate-900" data-page="notes">
+                <!-- Icon: Globe -->
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9.93 0a11.954 11.955 0 01-3.18 8.622m0 0a11.955 11.955 0 01-8.618-3.04m11.618 3.04V12m0 0V3.056"></path></svg>
+                海外情况
+            </button>
+        </nav>
+        
+        <!-- Footer Info -->
+        <div class="p-6 border-t border-slate-900/50 text-xs text-slate-500">
+            大健康行业运营组
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-64 p-8 min-h-screen">
+        
+        <!-- Page 1: Overview -->
+        <section id="page-overview" class="page space-y-6 active">
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200/60">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">周报总览</h2>
+                    <p class="text-sm text-slate-500 mt-1">统计周期 : <span class="editable-text">2026.06.18 - 2026.06.25</span></p>
+                </div>
+                <div class="flex items-center gap-2 text-xs bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full font-semibold border border-indigo-100">
+                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span> 数据已更新
+                </div>
+            </div>
+
+            <!-- Core Metrics Panel (KPIs) -->
+            <div class="glass-panel p-6 rounded-2xl">
+                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-6">核心经营数据</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <!-- KPI Card 1 -->
+                    <div class="selectable-block glass-panel p-5 rounded-xl border border-slate-100 hover:border-slate-300" onclick="toggleSelectCard(this)">
+                        <p class="text-xs font-semibold text-slate-400 editable-text">累计总收入</p>
+                        <div class="flex items-baseline gap-1 mt-2">
+                            <span class="text-3xl font-extrabold text-slate-900 editable-text">392.7</span>
+                            <span class="text-xs text-slate-500 font-medium editable-text">万元</span>
+                        </div>
+                        <div class="text-[10px] text-emerald-600 font-semibold mt-2 flex items-center gap-1">
+                            <span class="editable-text">↑ 4.2%</span> <span class="text-slate-400 font-normal editable-text">较上期</span>
+                        </div>
+                    </div>
+                    <!-- KPI Card 2 -->
+                    <div class="selectable-block glass-panel p-5 rounded-xl border border-slate-100 hover:border-slate-300" onclick="toggleSelectCard(this)">
+                        <p class="text-xs font-semibold text-slate-400 editable-text">服务中客户</p>
+                        <div class="flex items-baseline gap-1 mt-2">
+                            <span class="text-3xl font-extrabold text-slate-900 editable-text">353</span>
+                            <span class="text-xs text-slate-500 font-medium editable-text">家</span>
+                        </div>
+                        <div class="text-[10px] text-emerald-600 font-semibold mt-2 flex items-center gap-1">
+                            <span class="editable-text">↑ 14家</span> <span class="text-slate-400 font-normal editable-text">新增稳定</span>
+                        </div>
+                    </div>
+                    <!-- KPI Card 3 -->
+                    <div class="selectable-block glass-panel p-5 rounded-xl border border-slate-100 hover:border-slate-300" onclick="toggleSelectCard(this)">
+                        <p class="text-xs font-semibold text-slate-400 editable-text">本周新增客户</p>
+                        <div class="flex items-baseline gap-1 mt-2">
+                            <span class="text-3xl font-extrabold text-indigo-600 editable-text">14</span>
+                            <span class="text-xs text-indigo-500 font-medium editable-text">家</span>
+                        </div>
+                        <div class="text-[10px] text-indigo-600 font-semibold mt-2 flex items-center gap-1">
+                            <span class="editable-text">超越预期</span>
+                        </div>
+                    </div>
+                    <!-- KPI Card 4 -->
+                    <div class="selectable-block glass-panel p-5 rounded-xl border border-slate-100 hover:border-slate-300" onclick="toggleSelectCard(this)">
+                        <p class="text-xs font-semibold text-slate-400 editable-text">本周新增话题</p>
+                        <div class="flex items-baseline gap-1 mt-2">
+                            <span class="text-3xl font-extrabold text-slate-900 editable-text">33</span>
+                            <span class="text-xs text-slate-500 font-medium editable-text">个</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 font-normal mt-2 editable-text">
+                            内容生态健康
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Version Status Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="glass-panel bg-slate-900 text-white p-5 rounded-2xl border-none shadow-md">
+                    <p class="text-slate-400 text-xs font-semibold tracking-wider editable-text">标准版年度</p>
+                    <p class="text-4xl font-light mt-3 mb-1 editable-text">22</p>
+                    <p class="text-slate-500 text-[11px] font-medium editable-text">转运营 / 服务中 170</p>
+                </div>
+                <div class="glass-panel bg-slate-800 text-white p-5 rounded-2xl border-none shadow-md">
+                    <p class="text-slate-400 text-xs font-semibold tracking-wider editable-text">专业版年度</p>
+                    <p class="text-4xl font-light mt-3 mb-1 editable-text">17</p>
+                    <p class="text-slate-500 text-[11px] font-medium editable-text">转运营 / 服务中 55</p>
+                </div>
+                <div class="bg-indigo-600 text-white p-5 rounded-2xl shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20">
+                    <p class="text-indigo-200 text-xs font-semibold tracking-wider editable-text">标准版季度</p>
+                    <p class="text-4xl font-light mt-3 mb-1 editable-text">19</p>
+                    <p class="text-indigo-200 text-[11px] font-medium editable-text">转运营 / 服务中 101</p>
+                </div>
+                <div class="bg-emerald-600 text-white p-5 rounded-2xl shadow-lg shadow-emerald-600/10 hover:shadow-emerald-600/20">
+                    <p class="text-emerald-100 text-xs font-semibold tracking-wider editable-text">专业版季度</p>
+                    <p class="text-4xl font-light mt-3 mb-1 editable-text">10</p>
+                    <p class="text-emerald-100 text-[11px] font-medium editable-text">转运营 / 服务中 27</p>
+                </div>
+            </div>
+
+            <!-- Two Column Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Left Column -->
+                <div class="space-y-6">
+                    <!-- Project Progress -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <span class="w-1.5 h-3 bg-indigo-600 rounded"></span> 大客户项目进展
+                        </h3>
+                        <div class="space-y-3">
+                            <!-- Item 1 -->
+                            <div class="selectable-block glass-panel p-4 rounded-xl border border-slate-100 flex items-center gap-4" onclick="toggleSelectCard(this)">
+                                <div class="w-1.5 h-10 bg-blue-500 rounded-full"></div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold text-sm text-slate-800 editable-text">华润三九医药</span>
+                                        <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-100 editable-text">进行中</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-1">上线时间 : <span class="editable-text">2026/6/10</span></p>
+                                </div>
+                            </div>
+                            <!-- Item 2 -->
+                            <div class="selectable-block glass-panel p-4 rounded-xl border border-slate-100 flex items-center gap-4" onclick="toggleSelectCard(this)">
+                                <div class="w-1.5 h-10 bg-orange-500 rounded-full"></div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold text-sm text-slate-800 editable-text">快克</span>
+                                        <span class="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-blue-100 editable-text">需求对接</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-1">上线时间 : <span class="editable-text">2026/6/25</span></p>
+                                </div>
+                            </div>
+                            <!-- Item 3 -->
+                            <div class="selectable-block glass-panel p-4 rounded-xl border border-slate-100 flex items-center gap-4" onclick="toggleSelectCard(this)">
+                                <div class="w-1.5 h-10 bg-purple-500 rounded-full"></div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold text-sm text-slate-800 editable-text">仁树医疗</span>
+                                        <span class="bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-amber-100 editable-text">方案输出</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-1">计划完成 : <span class="editable-text">6月底</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Follow-up -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <span class="w-1.5 h-3 bg-indigo-600 rounded"></span> 重点客户跟进
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="selectable-block p-4 rounded-xl bg-slate-50/50 hover:bg-slate-100/50 border border-transparent transition-all" onclick="toggleSelectCard(this)">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold text-sm text-slate-800 editable-text">卓正医疗</span>
+                                    <span class="text-xs text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-md editable-text">正常跟进</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1 editable-text">已完成关键词交叉核验，下一阶段准备优化方案。</p>
+                            </div>
+                            <div class="selectable-block p-4 rounded-xl bg-slate-50/50 hover:bg-slate-100/50 border border-transparent transition-all" onclick="toggleSelectCard(this)">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold text-sm text-slate-800 editable-text">新秀丽</span>
+                                    <span class="text-xs text-slate-400 font-bold bg-slate-100 px-2 py-0.5 rounded-md">待启动</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">项目对接人休假中，预计下周三启动对接工作。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-6">
+                    <!-- Brand Visibility -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-6 flex items-center gap-2">
+                            <span class="w-1.5 h-3 bg-indigo-600 rounded"></span> 内部品牌可见度 TOP5
+                        </h3>
+                        <div class="space-y-4">
+                            <!-- Row 1 -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                    <span class="editable-text">浙江地区广告服务商</span>
+                                    <span class="editable-text">71.67%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-600 h-full rounded-full" style="width: 71.67%"></div>
+                                </div>
+                            </div>
+                            <!-- Row 2 -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                    <span class="editable-text">福建地区广告服务商</span>
+                                    <span class="editable-text">67.50%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-600 h-full rounded-full" style="width: 67.5%"></div>
+                                </div>
+                            </div>
+                            <!-- Row 3 -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                    <span class="editable-text">腾讯广告服务商</span>
+                                    <span class="editable-text">60.00%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-600 h-full rounded-full" style="width: 60%"></div>
+                                </div>
+                            </div>
+                            <!-- Row 4 -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                    <span class="editable-text">北京地区广告服务商</span>
+                                    <span class="editable-text">59.17%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-600 h-full rounded-full" style="width: 59.17%"></div>
+                                </div>
+                            </div>
+                            <!-- Row 5 -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                    <span class="editable-text">河南地区广告服务商</span>
+                                    <span class="editable-text">48.33%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-600 h-full rounded-full" style="width: 48.33%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between text-xs text-slate-400">
+                            <span>总可见度 : <b class="text-slate-700 font-bold editable-text">43.39%</b></span>
+                            <span>总发文 : <span class="editable-text">302 条</span></span>
+                            <span>总花费 : <span class="editable-text">10,084 元</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Risk Alerts -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                                <span class="w-1.5 h-3 bg-indigo-600 rounded"></span> 风险客户预警
+                            </h3>
+                            <span class="bg-rose-50 text-rose-600 border border-rose-100 text-[10px] font-bold px-2 py-0.5 rounded-full editable-text">4 项待处理</span>
+                        </div>
+                        <div class="space-y-3">
+                            <!-- Card 1 -->
+                            <div class="selectable-block p-4 rounded-xl bg-rose-50/40 border-l-4 border-rose-500 flex justify-between items-start" onclick="toggleSelectCard(this)">
+                                <div>
+                                    <span class="font-bold text-sm text-slate-800 editable-text">万密斋</span>
+                                    <p class="text-xs text-slate-400 mt-1 editable-text">涉及传销风险，内容合规性需紧急排查</p>
+                                </div>
+                                <span class="bg-rose-100 text-rose-700 text-[10px] font-bold px-1.5 py-0.5 rounded editable-text">高风险</span>
+                            </div>
+                            <!-- Card 2 -->
+                            <div class="selectable-block p-4 rounded-xl bg-amber-50/40 border-l-4 border-amber-500 flex justify-between items-start" onclick="toggleSelectCard(this)">
+                                <div>
+                                    <span class="font-bold text-sm text-slate-800 editable-text">深圳华侨医院</span>
+                                    <p class="text-xs text-slate-400 mt-1 editable-text">颌面整形相关四级资质证书待补充</p>
+                                </div>
+                                <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded editable-text">待确认</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 2: Delivery -->
+        <section id="page-delivery" class="page space-y-6">
+            <div class="pb-4 border-b border-slate-200/60">
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">经营交付数据看板</h2>
+                <p class="text-sm text-slate-500 mt-1">转运营交付全量数据统计</p>
+            </div>
+            
+            <div class="glass-panel p-6 rounded-2xl overflow-hidden">
+                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">全量客户交付汇总</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-slate-600 border-collapse">
+                        <thead class="bg-slate-50/50 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-100">
+                            <tr>
+                                <th class="py-3.5 px-4 font-semibold text-center w-1/4">版本类型</th>
+                                <th class="py-3.5 px-4 font-semibold text-center w-1/4">转运营客户数</th>
+                                <th class="py-3.5 px-4 font-semibold text-center w-1/4">服务中客户数</th>
+                                <th class="py-3.5 px-4 font-bold text-center w-1/4">本周新增</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="selectable-block hover:bg-slate-50/40" onclick="toggleSelectCard(this)">
+                                <td class="py-4 px-4 font-semibold text-slate-800 text-center editable-text">标准版年度</td>
+                                <td class="py-4 px-4 font-semibold text-slate-800 text-center editable-text">22</td>
+                                <td class="py-4 px-4 text-slate-500 text-center editable-text">170</td>
+                                <td class="py-4 px-4 text-center">
+                                    <span class="inline-flex items-center justify-center px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-sm animate-pulse-slow editable-text">
+                                        +6
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="selectable-block hover:bg-slate-50/40" onclick="toggleSelectCard(this)">
+                                <td class="py-4 px-4 font-semibold text-slate-800 text-center editable-text">专业版年度</td>
+                                <td class="py-4 px-4 font-semibold text-slate-800 text-center editable-text">17</td>
+                                <td class="py-4 px-4 text-slate-500 text-center editable-text">55</td>
+                                <td class="py-4 px-4 text-center">
+                                    <span class="inline-flex items-center justify-center px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-sm animate-pulse-slow editable-text">
+                                        +1
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="selectable-block hover:bg-slate-50/40" onclick="toggleSelectCard(this)">
+                                <td class="py-4 px-4 font-semibold text-slate-800 text-center editable-text">标准版季度</td>
+                                <td class="py-4 px-4 font-semibold text-slate-800 text-center editable-text">19</td>
+                                <td class="py-4 px-4 text-slate-500 text-center editable-text">101</td>
+                                <td class="py-4 px-4 text-center">
+                                    <span class="inline-flex items-center justify-center px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-sm animate-pulse-slow editable-text">
+                                        +5
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="selectable-block hover:bg-slate-50/40" onclick="toggleSelectCard(this)">
+                                <td class="py-4 px-4 font-semibold text-slate-800 text-center editable-text">专业版季度</td>
+                                <td class="py-4 px-4 font-semibold text-slate-800 text-center editable-text">10</td>
+                                <td class="py-4 px-4 text-slate-500 text-center editable-text">27</td>
+                                <td class="py-4 px-4 text-center">
+                                    <span class="inline-flex items-center justify-center px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-sm animate-pulse-slow editable-text">
+                                        +2
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- 合计行 -->
+                            <tr class="bg-indigo-50/30 font-bold text-indigo-950">
+                                <td class="py-4 px-4 rounded-l-xl text-center editable-text">合计</td>
+                                <td class="py-4 px-4 text-center text-indigo-900 editable-text">68</td>
+                                <td class="py-4 px-4 text-center text-indigo-900 editable-text">353</td>
+                                <td class="py-4 px-4 text-center rounded-r-xl">
+                                    <span class="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-sm font-extrabold bg-emerald-600 text-white shadow shadow-emerald-600/10 editable-text">
+                                        +14
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 3: Project -->
+        <section id="page-project" class="page space-y-6">
+            <div class="pb-4 border-b border-slate-200/60">
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">重点项目推进</h2>
+                <p class="text-sm text-slate-500 mt-1">重点大客户项目全览</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                
+                <!-- 左 1/2：卓正反馈情况 -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between h-8">
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-4 bg-indigo-600 rounded"></div>
+                            <h3 class="font-bold text-slate-900 text-lg editable-text">卓正医疗反馈情况</h3>
+                        </div>
+                        <span class="bg-indigo-50 text-indigo-700 border border-indigo-100 text-xs font-bold px-2.5 py-1 rounded-md editable-text">重点核心跟进</span>
+                    </div>
+                    
+                    <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between space-y-6 min-h-[460px]">
+                        <div class="space-y-4 text-sm text-slate-600 leading-relaxed">
+                            <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-100/80">
+                                <p class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>本周跟进摘要：
+                                </p>
+                                <p class="text-slate-500 text-xs pl-3.5 leading-relaxed editable-text">
+                                    已经顺利完成该项目全部核心关键词的交叉比对核验。整体链路状态平稳，预计下周初即可配合业务部门输出下一阶段的场景深度优化提升方案。
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- 附件佐证材料上传预览区 -->
+                        <div class="space-y-2 pt-4 border-t border-slate-100">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">附件 / 补充材料 (在此插入或预览图片)</label>
+                            <div class="border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/5 transition-all rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer bg-slate-50/30 group" onclick="document.getElementById('img-uploader').click()">
+                                <input type="file" id="img-uploader" accept="image/*" class="hidden" multiple="" onchange="previewImages(this)">
+                                
+                                <svg class="w-8 h-8 text-slate-400 group-hover:text-indigo-500 transition-colors mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <p class="text-xs text-slate-500 font-semibold group-hover:text-indigo-600 transition-colors">点击或拖拽图片材料上传</p>
+                                <p class="text-[10px] text-slate-400 mt-1">支持插入多张 JPG、PNG 格式材料</p>
+                                
+                                <div id="preview-box" class="grid grid-cols-4 gap-2 mt-4 w-full hidden" onclick="event.stopPropagation()"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右 1/2：大客户支持 -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 h-8">
+                        <div class="w-1.5 h-4 bg-slate-600 rounded"></div>
+                        <h3 class="font-bold text-slate-900 text-lg editable-text">大客户支持</h3>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- 华润三九医药 -->
+                        <div class="selectable-block glass-panel p-5 rounded-2xl border border-slate-100 flex flex-col justify-between" onclick="toggleSelectCard(this)">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-bold text-slate-800 text-base editable-text">华润三九医药</h4>
+                                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-md editable-text">进行中</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mb-3">上线时间 : <span class="editable-text">2026/06/10</span></p>
+                                <ul class="text-xs text-slate-600 space-y-1.5 pl-4 list-disc">
+                                    <li class="editable-text">售前具体核心需求精准对齐完毕</li>
+                                    <li class="editable-text">品牌大盘全域可见度深度诊断中</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 快克 -->
+                        <div class="selectable-block glass-panel p-5 rounded-2xl border border-slate-100 flex flex-col justify-between" onclick="toggleSelectCard(this)">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-bold text-slate-800 text-base editable-text">快克</h4>
+                                    <span class="bg-blue-50 text-blue-700 border border-blue-100 text-[10px] font-bold px-2 py-0.5 rounded-md editable-text">需求对接</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mb-3">上线时间 : <span class="editable-text">2026/06/25</span></p>
+                                <ul class="text-xs text-slate-600 space-y-1.5 pl-4 list-disc">
+                                    <li class="editable-text">品牌在主流搜索引擎的展示可见度提升与纠偏</li>
+                                    <li class="editable-text">AI推荐精准模型优化，进一步提升关联度</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 仁树医疗 -->
+                        <div class="selectable-block glass-panel p-5 rounded-2xl border border-slate-100 flex flex-col justify-between" onclick="toggleSelectCard(this)">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-bold text-slate-800 text-base editable-text">仁树医疗</h4>
+                                    <span class="bg-amber-50 text-amber-700 border border-amber-100 text-[10px] font-bold px-2 py-0.5 rounded-md editable-text">方案输出</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mb-3">计划完成 : <span class="editable-text">6月底</span></p>
+                                <ul class="text-xs text-slate-600 space-y-1.5 pl-4 list-disc">
+                                    <li class="editable-text">制定大模型及GEO端长期深度优化拓展战略</li>
+                                    <li class="editable-text">定制化出具大健康及私立医院行业专属场景报告</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Page 4: Brand (微盟星启) -->
+        <section id="page-brand" class="page space-y-6">
+            <div class="pb-4 border-b border-slate-200/60">
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight editable-text">微盟星启</h2>
+                <p class="text-sm text-slate-500 mt-1 editable-text">内部品牌可见度与发文多维统计</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- 顶层关键指标 -->
+                <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-wider editable-text">总可见度</p>
+                        <p class="text-3xl font-extrabold text-indigo-600 mt-2 editable-text">43.39%</p>
+                    </div>
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-wider editable-text">现状总话题排名</p>
+                        <p class="text-3xl font-extrabold text-slate-900 mt-2 editable-text">No.1</p>
+                    </div>
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-wider editable-text">总发文量</p>
+                        <div class="flex items-baseline gap-1 mt-2">
+                            <span class="text-3xl font-extrabold text-slate-900 editable-text">302</span>
+                            <span class="text-xs text-slate-400 font-medium editable-text">条</span>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-wider editable-text">总发文花费</p>
+                        <div class="flex items-baseline gap-1 mt-2">
+                            <span class="text-3xl font-extrabold text-slate-900">10,084</span>
+                            <span class="text-xs text-slate-400 font-medium editable-text">元</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 左侧 2/3：分话题可见度列表 -->
+                <div class="lg:col-span-2 glass-panel p-6 rounded-2xl space-y-4">
+                    <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                        <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-1.5 h-3 bg-indigo-600 rounded"></span> 分话题可见度列表 (16个)
+                        </h3>
+                        <span class="text-xs text-slate-400 font-semibold bg-slate-100 px-2.5 py-1 rounded editable-text">当前策略：波动差异化维稳</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[480px] overflow-y-auto pr-2">
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">1. 浙江地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">71.67%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-600 h-full rounded-full" style="width: 71.67%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">2. 福建地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">67.50%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 67.50%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">3. 腾讯广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">60.00%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 60.00%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">4. 北京地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">59.17%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 59.17%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">5. 河南地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">48.33%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 48.33%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">6. 江苏地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">47.50%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 47.50%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">7. 湖南地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">41.67%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 41.67%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">8. 重庆地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">40.00%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 40.00%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">9. 四川地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">40.00%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 40.00%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">10. 陕西地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">36.67%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 36.67%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">11. 广东/深圳地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">35.83%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 35.83%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">12. 湖北地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">33.33%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 33.33%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">13. 小红书广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">30.00%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 30.00%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">14. 山东地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">27.50%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 27.50%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">15. 安徽地区广告服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">27.50%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 27.50%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-slate-50/40 p-3 rounded-xl border border-slate-100/60">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                                <span class="editable-text">16. 一站式广告投放服务商</span>
+                                <span class="text-indigo-600 font-bold editable-text percentage-text">27.50%</span>
+                            </div>
+                            <div class="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 27.50%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧 1/3 -->
+                <div class="space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span class="w-1.5 h-3 bg-indigo-600 rounded"></span> 现状及发布策略
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-100/80">
+                                    <p class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+                                        现状总话题可见度 41.67%
+                                    </p>
+                                    <p class="text-slate-500 text-[11px] leading-relaxed mt-2 pl-3 editable-text">
+                                        整体运营状况良好，排名第1，可见度稳固于41.67%。本期我们全面基于搜索引擎大模型的最新引用策略进行了发布机制调整，实现了在离线场景下的多维精准覆盖。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span class="w-1.5 h-3 bg-indigo-600 rounded"></span> 实时运营动作
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex items-start gap-3 bg-slate-50/80 p-3.5 rounded-xl border border-slate-100/80">
+                                    <span class="flex items-center justify-center w-6 h-6 rounded-lg bg-indigo-50 text-indigo-700 font-bold text-xs shrink-0">1</span>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-xs editable-text">同步监测特定场景</h4>
+                                        <p class="text-slate-500 text-[11px] leading-relaxed mt-1 editable-text">
+                                            当前场景问题已被准确核实与确认，并同步建立专项监视，全面追踪后期走向。
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3 bg-slate-50/80 p-3.5 rounded-xl border border-slate-100/80">
+                                    <span class="flex items-center justify-center w-6 h-6 rounded-lg bg-indigo-50 text-indigo-700 font-bold text-xs shrink-0">2</span>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-xs editable-text">准备储备待发内容</h4>
+                                        <p class="text-slate-500 text-[11px] leading-relaxed mt-1 editable-text">
+                                            新待发布的高质量内容及优化词条均已进入储备状态，随时准备上线。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 5: Risk -->
+        <section id="page-risk" class="page space-y-6">
+            <div class="pb-4 border-b border-slate-200/60">
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">监控预警</h2>
+                <p class="text-sm text-slate-500 mt-1">异常客户与风险事项跟踪</p>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Item 1 -->
+                <div class="selectable-block glass-panel p-6 rounded-2xl border-l-4 border-l-rose-500" onclick="toggleSelectCard(this)">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 text-base editable-text">万密斋</span>
+                                <span class="bg-rose-50 text-rose-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-100 editable-text">高风险</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2 editable-text">涉及传销敏感风险，要求在所有渠道代理加盟政策上绝对不体现敏感内容。</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center text-xs">
+                        <span class="text-slate-500"><b>下一步计划：</b><span class="editable-text">等待客户合规反馈</span></span>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="selectable-block glass-panel p-6 rounded-2xl border-l-4 border-l-amber-500" onclick="toggleSelectCard(this)">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 text-base editable-text">深圳华侨医院</span>
+                                <span class="bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-100 editable-text">资质待确认</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2 editable-text">颌面整形手术国家四级资质证明待客户提供副本并审核。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="selectable-block glass-panel p-6 rounded-2xl border-l-4 border-l-amber-500" onclick="toggleSelectCard(this)">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 text-base editable-text">万芳美容</span>
+                                <span class="bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-100 editable-text">资质待确认</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2 editable-text">生活美容相关资质和文案合规边界正在重新确认。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="selectable-block glass-panel p-6 rounded-2xl border-l-4 border-l-slate-400" onclick="toggleSelectCard(this)">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 text-base editable-text">心有灵硒</span>
+                                <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full editable-text">资质拆分</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2 editable-text">非保健食品与保健食品合规资质，进入拆分处理中。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 6: Notes (海外情况) -->
+        <section id="page-notes" class="page space-y-6">
+            <div class="pb-4 border-b border-slate-200/60">
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight editable-text">海外情况</h2>
+                <p class="text-sm text-slate-500 mt-1 editable-text">海外业务拓展与合规运营跟进</p>
+            </div>
+            
+            <div class="glass-panel rounded-2xl divide-y divide-slate-100 overflow-hidden">
+                <div class="selectable-block p-6 hover:bg-slate-50/40" onclick="toggleSelectCard(this)">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm text-slate-800 editable-text">东南亚大健康市场 GEO 布局启动</span>
+                        <span class="text-xs text-slate-400 editable-text">今天</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2 editable-text">新加坡及马来西亚主流搜索 GEO 策略对齐工作正式启动，目前已完成当地前三大在线医疗诊所的关键词深度诊断，首期重点覆盖常见病宣称和营养保健品检索场景。</p>
+                </div>
+                <div class="selectable-block p-6 hover:bg-slate-50/40" onclick="toggleSelectCard(this)">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm text-slate-800 editable-text">北美健康品牌独立站 GEO 优化对接</span>
+                        <span class="text-xs text-slate-400 editable-text">昨天</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2 editable-text">配合北美跨境运营团队，完成膳食营养补充剂（Dietary Supplements）独立站在海外主流搜索引擎以及 AI 大模型智能推荐平台（GEO）上的可见度基础交叉验证，下一阶段着手设计落地内容包。</p>
+                </div>
+                <div class="selectable-block p-6 hover:bg-slate-50/40" onclick="toggleSelectCard(this)">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm text-slate-800 editable-text">海外多地区健康宣称合规与资质审查</span>
+                        <span class="text-xs text-slate-400 editable-text">3天前</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2 editable-text">针对海外不同国家和地区（FDA、HSA等）健康宣称和医疗推广政策完成首轮合规排查，已建立多语种海外文案合规预警库，防范推广文案敏感词下架风险。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Navigation Handler
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active status on all sidebar items
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show current page
+                const page = this.getAttribute('data-page');
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('page-' + page).classList.add('active');
+
+                // Clear current selections when switching pages for better UX
+                document.querySelectorAll('.selectable-block').forEach(block => {
+                    block.classList.remove('selected-active');
+                });
+            });
+        });
+
+        // Click Selection Handler (点击某个板块高亮选中)
+        function toggleSelectCard(element) {
+            // Check if it is already selected
+            const isSelected = element.classList.contains('selected-active');
+            
+            // Clear selection from other elements on the same page
+            const currentPage = element.closest('.page');
+            if (currentPage) {
+                currentPage.querySelectorAll('.selectable-block').forEach(block => {
+                    block.classList.remove('selected-active');
+                });
+            } else {
+                document.querySelectorAll('.selectable-block').forEach(block => {
+                    block.classList.remove('selected-active');
+                });
+            }
+
+            // Toggle active class
+            if (!isSelected) {
+                element.classList.add('selected-active');
+            }
+        }
+
+        // 卓正医疗：图片上传与材料插入实时预览逻辑
+        function previewImages(input) {
+            const previewBox = document.getElementById('preview-box');
+            
+            if (!input.files || input.files.length === 0) {
+                previewBox.innerHTML = '';
+                previewBox.classList.add('hidden');
+                return;
+            }
+            
+            previewBox.innerHTML = '';
+            previewBox.classList.remove('hidden');
+            
+            Array.from(input.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'relative aspect-square rounded-lg overflow-hidden border border-slate-200 bg-white group shadow-sm';
+                    
+                    imgContainer.innerHTML = `
+                        <img src="${e.target.result}" class="w-full h-full object-cover" />
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button type="button" class="bg-rose-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded hover:bg-rose-700 transition-colors" onclick="removePreviewItem(this)">删除</button>
+                        </div>
+                    `;
+                    previewBox.appendChild(imgContainer);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removePreviewItem(btn) {
+            const container = btn.closest('.relative');
+            const parent = container.parentElement;
+            container.remove();
+            
+            if (parent.children.length === 0) {
+                parent.classList.add('hidden');
+            }
+        }
+
+        // ==========================================
+        // 新增：前端可视化实时编辑与文件导出逻辑
+        // ==========================================
+        let isEditModeActive = false;
+
+        // 启用或禁用页面的编辑态属性
+        function setEditMode(enable) {
+            isEditModeActive = enable;
+            const label = document.getElementById('toggle-label');
+            const toggleInput = document.getElementById('edit-toggle');
+            
+            toggleInput.checked = enable;
+            label.innerText = enable ? "编辑模式" : "预览模式";
+
+            const elements = document.querySelectorAll('.editable-text');
+            elements.forEach(el => {
+                if (enable) {
+                    el.setAttribute('contenteditable', 'true');
+                } else {
+                    el.removeAttribute('contenteditable');
+                }
+            });
+        }
+
+        // 绑定给控制台开关的事件处理器
+        function handleEditToggle(checkbox) {
+            setEditMode(checkbox.checked);
+        }
+
+        // 监听分话题百分比编辑，实时拉伸进度条
+        document.addEventListener('input', function(e) {
+            if (e.target && e.target.classList.contains('percentage-text')) {
+                let cleanVal = e.target.innerText.replace('%', '').trim();
+                const val = parseFloat(cleanVal);
+                if (!isNaN(val) && val >= 0 && val <= 100) {
+                    const parent = e.target.closest('.space-y-1') || e.target.closest('.bg-slate-50\\/40');
+                    if (parent) {
+                        const barFill = parent.querySelector('.bg-indigo-600') || parent.querySelector('.bg-indigo-500');
+                        if (barFill) {
+                            barFill.style.width = val + '%';
+                        }
+                    }
+                }
+            }
+        });
+
+        // 导出更新数据后的全新 HTML
+        function exportHTML() {
+            // 1. 如果当前处于编辑态，导出前临时关闭，消除所有外边框框线
+            const wasEditing = isEditModeActive;
+            if (wasEditing) {
+                setEditMode(false);
+            }
+
+            // 2. 清理临时的被选中高亮状态
+            document.querySelectorAll('.selected-active').forEach(el => {
+                el.classList.remove('selected-active');
+            });
+
+            // 3. 读取并克隆最新的 DOM 字符串
+            const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+            // 4. 打包文件并触发下载
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'geo-dashboard.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // 5. 还原导出的前一刻状态
+            if (wasEditing) {
+                setEditMode(true);
+            }
+        }
+    </script>
+
+</body></html>
