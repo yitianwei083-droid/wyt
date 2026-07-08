@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>大bee每日一巴掌·强制放假器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    
+    /* 极简暖色漫画风背景 */
+    body {
+      height: 100vh;
+      background: radial-gradient(circle at center, #fffdf0 0%, #ffeec2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 整体高频震屏动效 */
+    body.screen-shake {
+      animation: screenShakeAnim 0.22s ease-in-out;
+    }
+
+    @keyframes screenShakeAnim {
+      0% { transform: translate(0, 0); }
+      15% { transform: translate(-6px, 5px) rotate(-0.5deg); }
+      35% { transform: translate(5px, -4px) rotate(0.5deg); }
+      60% { transform: translate(-3px, 1px) rotate(-0.2deg); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* -------------------------------------------
+       大bee舞台显示区域
+    -------------------------------------------- */
+    .stage-container {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 40px;
+      z-index: 10;
+    }
+
+    /* 大bee图片容器 */
+    .bee-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+    }
+
+    .bee-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* 平时显示的静态图层 */
+    .img-static {
+      display: block;
+    }
+
+    /* 触发时才显示的动态 GIF 图层 */
+    .img-gif {
+      display: none;
+    }
+
+    /* 冲击波音爆圈 */
+    .impact-ring {
+      position: absolute;
+      left: 20%;
+      top: 30%;
+      width: 20px;
+      height: 20px;
+      border: 4px solid #ff3d3d;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      z-index: 6;
+    }
+
+    .impact-ring.active {
+      animation: ringBurstAnim 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+
+    @keyframes ringBurstAnim {
+      0% { transform: translate(-50%, -50%) scale(0.1); opacity: 1; border-width: 6px; }
+      100% { transform: translate(-50%, -50%) scale(4); opacity: 0; border-width: 1px; }
+    }
+
+    /* “啪！” 灵魂暴击大字 */
+    .slap-impact-text {
+      position: absolute;
+      left: 5%;
+      top: 25%;
+      font-size: 58px;
+      font-weight: 900;
+      color: #ffd700;
+      -webkit-text-stroke: 3px #000000;
+      text-shadow: 6px 6px 0px #000000;
+      transform: scale(0) rotate(-15deg);
+      pointer-events: none;
+      z-index: 18;
+      user-select: none;
+    }
+
+    .slap-impact-text.active {
+      animation: textBurstAnim 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.35) forwards;
+    }
+
+    @keyframes textBurstAnim {
+      0% { transform: scale(0) rotate(-15deg); }
+      20% { transform: scale(1.3) rotate(-22deg); }
+      70% { transform: scale(1) rotate(-15deg); opacity: 1; }
+      100% { transform: scale(0.7) rotate(-15deg); opacity: 0; }
+    }
+
+    /* -------------------------------------------
+       漫画风吐槽对话气泡
+    -------------------------------------------- */
+    .speech-bubble {
+      position: absolute;
+      top: -35px;
+      left: -90px;
+      background: #ffffff;
+      border: 3.5px solid #000000;
+      border-radius: 24px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #000000;
+      box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.15);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.5) translateY(20px);
+      z-index: 19;
+      user-select: none;
+    }
+
+    .speech-bubble.active {
+      animation: bubblePopupAnim 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards;
+    }
+
+    @keyframes bubblePopupAnim {
+      0% { opacity: 0; transform: scale(0.5) translateY(20px); }
+      12% { opacity: 1; transform: scale(1.1) translateY(0px); }
+      20% { opacity: 1; transform: scale(1) translateY(0px); }
+      85% { opacity: 1; transform: scale(1) translateY(0px); }
+      100% { opacity: 0; transform: scale(0.8) translateY(-15px); }
+    }
+
+    /* 对话框小三角尖角 */
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      right: 35px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 15px solid #ffffff;
+    }
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      right: 33px;
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 17px solid #000000;
+      z-index: -1;
+    }
+
+    /* -------------------------------------------
+       经典街机受击大按钮
+    -------------------------------------------- */
+    .slap-button {
+      background: linear-gradient(135deg, #ff4141, #c41313);
+      color: #ffffff;
+      border: 4px solid #000000;
+      border-radius: 999px;
+      padding: 16px 48px;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      cursor: pointer;
+      box-shadow: 0 8px 0 #7e0606, 0 15px 30px rgba(0,0,0,0.35);
+      transition: all 0.08s ease;
+      user-select: none;
+      outline: none;
+      z-index: 50;
+    }
+
+    .slap-button:hover {
+      background: linear-gradient(135deg, #ff5555, #d61818);
+    }
+
+    .slap-button:active {
+      transform: translateY(5px);
+      box-shadow: 0 3px 0 #7e0606, 0 8px 15px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 大bee展示区 -->
+  <div class="stage-container">
+    <!-- 漫画吐槽气泡 -->
+    <div class="speech-bubble" id="speechBubble">还学？快玩一会儿吧！</div>
+
+    <!-- 暴击字体 -->
+    <div class="slap-impact-text" id="slapImpactText">啪！</div>
+
+    <!-- 扩散热点音爆圈 -->
+    <div class="impact-ring" id="impactRing"></div>
+
+    <!-- 大bee静态图与动态GIF叠层 -->
+    <div class="bee-container" id="beeContainer">
+      <!-- 默认状态下显示在线的静态学习图 -->
+      <img src="https://yitianwei083-droid.github.io/wyt/bee_static.png" class="bee-img img-static" id="beeStatic" alt="大bee在学习">
+      <!-- 触发时闪现并重载的动态在线扇巴掌 GIF 动图 -->
+      <img src="" class="bee-img img-gif" id="beeGif" alt="大bee挨打中">
+    </div>
+  </div>
+
+  <!-- 街机发泄大红按钮 -->
+  <button class="slap-button" id="slapBtn">赏一个大B兜 🖐️</button>
+
+<script>
+  // ------------------------------------------------------------------
+  // ⚙️ 核心参数调节区：在这里你可以根据你的在线 GIF 进度随意微调
+  // ------------------------------------------------------------------
+  const GIF_DURATION = 1300; // 动图单次播放的总时间（毫秒），播完后会自动切换回静止图
+  const AUDIO_DELAY = 260;   // 声音延迟（毫秒），调整这个值让“啪！”声和 GIF 里巴掌接触脸部的瞬间完美重合
+
+  const slapBtn = document.getElementById("slapBtn");
+  const beeStatic = document.getElementById("beeStatic");
+  const beeGif = document.getElementById("beeGif");
+  const slapImpactText = document.getElementById("slapImpactText");
+  const impactRing = document.getElementById("impactRing");
+  const speechBubble = document.getElementById("speechBubble");
+
+  let isFiring = false;
+
+  // 觅2 经典大B兜吐槽词库
+  const phrases = [
+    "还学？快玩一会儿吧！",
+    "不信邪？",
+    "上瘾了吧！",
+    "倔驴！",
+    "别学了，走！带你摸鱼去！",
+    "分重要还是命重要？！",
+    "再学脑子就糊了！",
+    "你是一头勤劳的倔驴吗？",
+    "差不多得了，去睡懒觉！",
+    "偷偷玩会儿手机，没人看见！"
+  ];
+
+  // 预载在线静态与动态图片，提升首次点击时的反应速度（免去白屏加载）
+  const gifUrl = "https://yitianwei083-droid.github.io/wyt/bee.gif";
+  const tempPreload = new Image();
+  tempPreload.src = gifUrl;
+
+  // ------------------------------------------------------------------
+  // 【一句话合成高保真物理掌掴音效】（Web Audio API 浏览器底层，零音频文件依赖）
+  // ------------------------------------------------------------------
+  function playSlapAudio() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+
+      // 1. 白噪音：手掌摩擦爆鸣
+      const bufferSize = ctx.sampleRate * 0.12; 
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+
+      const noiseNode = ctx.createBufferSource();
+      noiseNode.buffer = buffer;
+
+      const filterNode = ctx.createBiquadFilter();
+      filterNode.type = 'bandpass';
+      filterNode.frequency.value = 1100;
+      filterNode.Q.value = 2.5;
+
+      const gainNode = ctx.createGain();
+      gainNode.gain.setValueAtTime(0.7, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.11);
+
+      noiseNode.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      // 2. 低频正弦敲击波
+      const oscNode = ctx.createOscillator();
+      const oscGain = ctx.createGain();
+      oscNode.frequency.setValueAtTime(160, ctx.currentTime);
+      oscNode.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 0.08);
+
+      oscGain.gain.setValueAtTime(0.9, ctx.currentTime);
+      oscGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+
+      oscNode.connect(oscGain);
+      oscGain.connect(ctx.destination);
+
+      noiseNode.start();
+      oscNode.start();
+      oscNode.stop(ctx.currentTime + 0.12);
+    } catch (e) {
+      console.warn("AudioContext audio error:", e);
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // 【大bee一巴掌完整交互逻辑】
+  // ------------------------------------------------------------------
+  function executeSlap() {
+    if (isFiring) return;
+    isFiring = true;
+    slapBtn.disabled = true;
+
+    // 1. 触发重载：隐藏静态封面，显示动态 GIF，加上随机时间戳确保从头播放
+    beeStatic.style.display = "none";
+    beeGif.style.display = "block";
+    
+    // 利用随机参数 ?t= 刷新重载在线 GIF，确保每次点击都是从头播放大B兜过程
+    beeGif.src = gifUrl + "?t=" + Date.now(); 
+
+    // 2. 匹配 GIF 进度，在落掌瞬时爆发出所有连锁反馈
+    setTimeout(() => {
+      // A. 播放底层合成的掌掴声音
+      playSlapAudio();
+
+      // B. 全屏强烈震颤
+      document.body.classList.remove("screen-shake");
+      void document.body.offsetWidth; // 触发回流重置
+      document.body.classList.add("screen-shake");
+
+      // C. 爆开圆形冲击波圈
+      impactRing.classList.remove("active");
+      void impactRing.offsetWidth;
+      impactRing.classList.add("active");
+
+      // D. 炸出金黄色“啪！”暴击字样
+      slapImpactText.classList.remove("active");
+      void slapImpactText.offsetWidth;
+      slapImpactText.classList.add("active");
+
+      // E. 随机替换并弹出对话气泡
+      const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+      speechBubble.innerText = randomPhrase;
+      speechBubble.classList.remove("active");
+      void speechBubble.offsetWidth;
+      speechBubble.classList.add("active");
+
+    }, AUDIO_DELAY);
+
+    // 3. GIF 单次播放时长结束后，优雅切回静态封面，等待下一次点击
+    setTimeout(() => {
+      beeGif.style.display = "none";
+      beeStatic.style.display = "block";
+      
+      isFiring = false;
+      slapBtn.disabled = false;
+      document.body.classList.remove("screen-shake");
+    }, GIF_DURATION);
+  }
+
+  slapBtn.onclick = executeSlap;
+
+  // 支持键盘回车、空格快捷开抽！
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      executeSlap();
+    }
+  });
+</script>
+</body>
+</html>
